@@ -29,6 +29,16 @@ Australian lawyer-connection platform demo — inspired by Attorney Shield, buil
 - **Letters & calls for you** — panel lawyer acts on your behalf (LegalShield)
 - **Business legal** — ABN, Pty Ltd, trademarks, employment (LegalZoom)
 - **Identity Shield** — theft monitoring + restoration lawyer (LegalShield)
+- **Shield Copilot** — AI assistant + legal health checkup (Rocket Lawyer)
+- **Legal Vault** — secure document archive (Rocket Lawyer)
+- **Court & Deadlines** — compliance calendar with SMS reminders (LegalZoom)
+- **Fine Defence** — infringement review & appeals (LegalShield traffic)
+- **Estate Planning** — will, POA, advance care directive (LegalZoom)
+- **Legal Library** — searchable guides (LegalShield)
+- **Your Law Firm** + attorney directory (LegalShield / LegalZoom)
+- **Supplemental plans** — gig driver, firearms, home business (LegalShield)
+- **Refer & Earn** — membership referrals
+- **Ask upgrades** — fast track, second opinion, phone consult, attachments (JustAnswer)
 - Shield Credit billing (15-min block → per-min → hourly)
 - Digital Glovebox, emergency SMS alerts, family plan
 - Know Your Rights (QLD, NSW, VIC), ATSILS links, medicinal cannabis module

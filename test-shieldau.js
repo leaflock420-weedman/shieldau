@@ -110,6 +110,16 @@ const required = [
   'id="hotline-section"',
   'id="attorney-action-section"',
   'id="business-section"',
+  'id="copilot-section"',
+  'id="vault-section"',
+  'id="calendar-section"',
+  'id="ticket-section"',
+  'id="estate-section"',
+  'id="library-section"',
+  'id="provider-section"',
+  'id="addons-section"',
+  'Shield Copilot',
+  'Fine Defence',
   'INSTANT LAWYER VIDEO',
   'Agora E2E',
   'Digital Glovebox',
@@ -120,6 +130,7 @@ const required = [
   'function sendEmergencyAlert',
   'function showPinModal',
   'function sendAskLawyer',
+  'function sendCopilot',
 ];
 required.forEach(id => assert(html.includes(id), `Contains: ${id}`));
 
