@@ -1,10 +1,13 @@
-const CACHE = 'shieldau-v2';
+const CACHE = 'shieldau-v3';
 const PRECACHE = [
   '/shieldau/',
   '/shieldau/index.html',
   '/shieldau/manifest.json',
+  '/shieldau/icons/icon-96.png',
   '/shieldau/icons/icon-192.png',
   '/shieldau/icons/icon-512.png',
+  '/shieldau/screenshots/narrow.png',
+  '/shieldau/screenshots/wide.png',
   '/shieldau/sw.js'
 ];
 
