@@ -1,23 +1,62 @@
 {
+  "id": "/shieldau/",
   "name": "ShieldAU",
   "short_name": "ShieldAU",
   "description": "Instant connection to Australian lawyers during police interactions",
-  "start_url": "./index.html",
+  "start_url": "/shieldau/index.html",
+  "scope": "/shieldau/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#111827",
   "theme_color": "#1e3a8a",
   "orientation": "portrait",
-  "scope": "./",
+  "lang": "en-AU",
+  "dir": "ltr",
+  "categories": ["business", "utilities", "legal"],
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+      "src": "/shieldau/icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+      "src": "/shieldau/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/shieldau/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Connect to Lawyer",
+      "short_name": "Connect",
+      "description": "Instant video connect to a Queensland lawyer",
+      "url": "/shieldau/index.html",
+      "icons": [{ "src": "/shieldau/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Know Your Rights",
+      "short_name": "Rights",
+      "description": "QLD, NSW and VIC rights guides",
+      "url": "/shieldau/index.html",
+      "icons": [{ "src": "/shieldau/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/shieldau/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "ShieldAU home screen"
     }
   ]
 }

@@ -8,7 +8,8 @@
     <meta name="apple-mobile-web-app-title" content="ShieldAU">
     <meta name="description" content="Instant connection to Australian lawyers during police interactions">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
     <title>ShieldAU • Technology Platform Demo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -1794,7 +1795,9 @@
         });
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(() => {});
+            navigator.serviceWorker.register('/shieldau/sw.js', { scope: '/shieldau/' }).catch(() => {
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
+            });
         }
     </script>
 </body>
