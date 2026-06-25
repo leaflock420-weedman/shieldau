@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShieldAU • Technology Platform Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
+
+        :root { --primary: #1e3a8a; }
+
+        body { font-family: 'Inter', system-ui, sans-serif; }
+
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .app-container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 40px;
+            overflow: hidden;
+            border: 12px solid #111827;
+        }
+
+        .mobile-header {
+            background: linear-gradient(to right, #1e3a8a, #1e40af);
+        }
+
+        .police-btn {
+            background: linear-gradient(#b91c1c, #991b1b);
+            transition: all 0.2s ease;
+        }
+
+        .police-btn:active { transform: scale(0.98); }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .lawyer-card { transition: all 0.2s ease; }
+
+        .disclaimer-bar {
+            background: #fef3c7;
+            border-bottom: 1px solid #fcd34d;
+            font-size: 0.65rem;
+            line-height: 1.35;
+        }
+
+        .info-only-badge {
+            font-size: 0.6rem;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
+
+        .category-card.selected {
+            border-color: #1e3a8a;
+            background: #eff6ff;
+            box-shadow: 0 0 0 2px #1e3a8a;
+        }
+
+        .nav-btn.active { color: #1e3a8a; }
+        .nav-btn.active i { transform: scale(1.1); }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.show { display: flex; }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.7; }
+            100% { transform: scale(0.95); opacity: 1; }
+        }
+
+        .pulse-ring { animation: pulse-ring 2s ease-in-out infinite; }
+
+        .video-stage {
+            background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 9/12;
+        }
+
+        .video-pip {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            width: 28%;
+            aspect-ratio: 3/4;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .video-scanline {
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px);
+            pointer-events: none;
+        }
+
+        @keyframes video-pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        .rec-dot { animation: video-pulse 1.5s ease-in-out infinite; }
+
+        .glovebox-card {
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .glovebox-card:hover { border-color: #93c5fd; }
+
+        .pin-key {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            background: #f4f4f5;
+        }
+
+        .pin-key:active { transform: scale(0.92); }
+
+        .emergency-sent-banner {
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 py-8">
+
+    <!-- Terms acceptance modal (first launch) -->
+    <div id="terms-modal" class="modal-overlay show">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-blue-900 rounded-2xl flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-white text-xl"></i>
+                </div>
+                <div>
+                    <div class="font-display text-xl">ShieldAU</div>
+                    <div class="text-xs text-zinc-500">Technology &amp; Referral Platform</div>
+                </div>
+            </div>
+
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4 text-xs text-amber-900">
+                <div class="font-semibold mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Important — Read before continuing
+                </div>
+                <ul class="space-y-2 list-disc pl-4">
+                    <li>ShieldAU is a <strong>technology platform</strong> that connects you to <strong>independent, qualified Australian lawyers</strong>. We do <strong>not</strong> provide legal advice.</li>
+                    <li>All educational content is <strong>general information only</strong> — not tailored to your situation.</li>
+                    <li>You must <strong>always comply with lawful police directions</strong> (e.g. identification, breath/saliva tests when lawfully required).</li>
+                    <li>Lawyers on our panel are independent practitioners. ShieldAU is not a law firm and does not guarantee outcomes.</li>
+                    <li>By continuing you agree to our <button onclick="showSectionFromModal('terms-section')" class="text-blue-700 underline">Terms of Service</button> and <button onclick="showSectionFromModal('privacy-section')" class="text-blue-700 underline">Privacy Policy</button>.</li>
+                </ul>
+            </div>
+
+            <label class="flex items-start gap-3 mb-4 cursor-pointer">
+                <input type="checkbox" id="terms-checkbox" class="mt-1 rounded">
+                <span class="text-xs text-zinc-600">I understand ShieldAU does not provide legal advice and I will comply with lawful directions from police.</span>
+            </label>
+
+            <button onclick="acceptTerms()" id="accept-terms-btn" disabled
+                    class="w-full py-3.5 bg-blue-800 text-white rounded-2xl font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                Continue to Demo
+            </button>
+        </div>
+    </div>
+
+    <div class="max-w-[420px] mx-auto">
+        <!-- Outer header -->
+        <div class="flex items-center justify-between px-6 mb-4">
+            <div class="flex items-center gap-x-3">
+                <div class="w-10 h-10 bg-blue-900 rounded-2xl flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-white text-2xl"></i>
+                </div>
+                <div>
+                    <span class="font-display text-3xl font-semibold tracking-tighter text-white">Shield</span>
+                    <span class="font-display text-3xl font-semibold tracking-tighter text-blue-400">AU</span>
+                </div>
+            </div>
+            <div class="px-3 py-1 bg-zinc-900 rounded-full text-xs text-zinc-400 flex items-center gap-x-1.5">
+                <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span>Demo v1.1</span>
+            </div>
+        </div>
+
+        <div class="app-container bg-white shadow-2xl">
+
+            <!-- Status bar -->
+            <div class="bg-zinc-900 px-5 py-2 flex items-center justify-between text-white text-xs">
+                <div class="flex items-center gap-x-2"><i class="fa-solid fa-wifi"></i><span>4G</span></div>
+                <div id="status-time">11:39</div>
+                <div class="flex items-center gap-x-1"><i class="fa-solid fa-battery-three-quarters"></i><span>87%</span></div>
+            </div>
+
+            <!-- Persistent disclaimer -->
+            <div class="disclaimer-bar px-4 py-2 text-amber-900">
+                <i class="fa-solid fa-circle-info mr-1"></i>
+                Technology platform only — not legal advice. Comply with lawful police directions.
+            </div>
+
+            <!-- App header -->
+            <div class="mobile-header px-5 py-4 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm opacity-75">Good morning, Lewis</div>
+                        <div class="text-2xl font-semibold tracking-tight">ShieldAU</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs opacity-75">Gold Coast, QLD</div>
+                        <div class="flex items-center justify-end gap-x-1 text-emerald-400">
+                            <i class="fa-solid fa-circle text-[10px]"></i>
+                            <span class="text-xs font-medium">Panel online</span>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="showSection('wallet-section')" class="mt-3 w-full bg-white/10 hover:bg-white/15 rounded-2xl px-4 py-2.5 flex items-center justify-between transition-colors">
+                    <div class="flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-wallet"></i>
+                        <span class="opacity-90">Shield Credit</span>
+                        <span class="text-[10px] bg-emerald-500/30 text-emerald-200 px-2 py-0.5 rounded-full">Shield Plus</span>
+                    </div>
+                    <div class="font-semibold" id="header-wallet-balance">$149.00</div>
+                </button>
+            </div>
+
+            <div class="p-5 pb-4 min-h-[520px]">
+
+                <!-- HOME -->
+                <div id="home-section" class="section active">
+                    <div class="mb-5">
+                        <div class="bg-red-50 border border-red-200 rounded-3xl p-5">
+                            <div class="flex items-start gap-x-4">
+                                <div class="w-12 h-12 bg-red-600 rounded-2xl flex-shrink-0 flex items-center justify-center pulse-ring">
+                                    <i class="fa-solid fa-phone-volume text-white text-2xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-semibold text-red-700 text-lg leading-none mb-1">Need a lawyer now?</div>
+                                    <p class="text-sm text-red-600/90 mb-3">Connect to an independent Queensland lawyer from our partner panel.</p>
+                                    <button onclick="showSection('category-section')"
+                                            class="police-btn w-full py-4 rounded-2xl text-white font-semibold flex items-center justify-center gap-x-3 text-sm shadow-lg">
+                                        <i class="fa-solid fa-video"></i>
+                                        <span>INSTANT LAWYER VIDEO</span>
+                                    </button>
+                                    <div class="text-[10px] text-red-600/70 text-center mt-2">Est. wait: &lt; 2 min (demo) • After-hours rates may apply</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mb-5">
+                        <button onclick="showSection('rights-section')" class="bg-white border border-zinc-200 hover:border-zinc-300 p-4 rounded-3xl text-left">
+                            <i class="fa-solid fa-balance-scale text-blue-700 text-xl mb-2"></i>
+                            <div class="font-semibold text-sm">Know Your Rights</div>
+                            <div class="text-[10px] text-blue-600 mt-1 info-only-badge inline-block px-2 py-0.5 rounded-full">General info only</div>
+                        </button>
+                        <button onclick="showSection('glovebox-section')" class="bg-white border border-zinc-200 hover:border-zinc-300 p-4 rounded-3xl text-left">
+                            <i class="fa-solid fa-folder-closed text-blue-700 text-xl mb-2"></i>
+                            <div class="font-semibold text-sm">Digital Glovebox</div>
+                            <div class="text-xs text-zinc-500">ID, licence, insurance</div>
+                        </button>
+                        <button onclick="showSection('emergency-section')" class="bg-white border border-zinc-200 hover:border-zinc-300 p-4 rounded-3xl text-left">
+                            <i class="fa-solid fa-bell text-red-600 text-xl mb-2"></i>
+                            <div class="font-semibold text-sm">Emergency Contacts</div>
+                            <div class="text-xs text-zinc-500">SMS + location alerts</div>
+                        </button>
+                        <button onclick="showSection('document-section')" class="bg-white border border-zinc-200 hover:border-zinc-300 p-4 rounded-3xl text-left">
+                            <i class="fa-solid fa-clipboard-list text-blue-700 text-xl mb-2"></i>
+                            <div class="font-semibold text-sm">Document Incident</div>
+                            <div class="text-xs text-zinc-500">Your personal notes</div>
+                        </button>
+                        <button onclick="showSection('family-section')" class="bg-white border border-zinc-200 hover:border-zinc-300 p-4 rounded-3xl text-left">
+                            <i class="fa-solid fa-users text-blue-700 text-xl mb-2"></i>
+                            <div class="font-semibold text-sm">Family Plan</div>
+                            <div class="text-xs text-zinc-500" id="home-family-count">2 sub-accounts</div>
+                        </button>
+                        <button onclick="showSection('complaints-section')" class="bg-white border border-zinc-200 hover:border-zinc-300 p-4 rounded-3xl text-left">
+                            <i class="fa-solid fa-file-circle-exclamation text-blue-700 text-xl mb-2"></i>
+                            <div class="font-semibold text-sm">Make a Complaint</div>
+                            <div class="text-xs text-zinc-500">Official QLD channels</div>
+                        </button>
+                        <button onclick="showSection('cannabis-section')" class="bg-white border border-zinc-200 hover:border-zinc-300 p-4 rounded-3xl text-left">
+                            <i class="fa-solid fa-leaf text-emerald-700 text-xl mb-2"></i>
+                            <div class="font-semibold text-sm">Medicinal Cannabis</div>
+                            <div class="text-[10px] text-blue-600 mt-1 info-only-badge inline-block px-2 py-0.5 rounded-full">General info only</div>
+                        </button>
+                        <button onclick="showSection('aboriginal-section')" class="col-span-2 bg-amber-50 border border-amber-200 hover:border-amber-300 p-4 rounded-3xl text-left flex items-center gap-3">
+                            <i class="fa-solid fa-people-group text-amber-700 text-xl"></i>
+                            <div>
+                                <div class="font-semibold text-sm">Aboriginal Legal Services</div>
+                                <div class="text-xs text-amber-800">Free 24/7 culturally safe help — ATSILS, ALS, VALS</div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 mb-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-xs font-semibold text-emerald-800">Your Shield Credit</div>
+                            <button onclick="showSection('wallet-section')" class="text-[10px] text-emerald-700 underline">Manage</button>
+                        </div>
+                        <div class="text-2xl font-semibold text-emerald-900" id="home-wallet-balance">$149.00</div>
+                        <div class="text-[10px] text-emerald-700 mt-1">Subscription credit — pays lawyers when you connect. Unused credit rolls over (demo).</div>
+                        <div class="text-[10px] text-zinc-500 mt-2">First 15 min from <span id="home-first-block">$90</span> • then per min • hourly after 60 min</div>
+                    </div>
+
+                    <div class="bg-zinc-50 border border-zinc-200 rounded-2xl p-4 mb-4">
+                        <div class="text-xs font-semibold text-zinc-700 mb-2">Partner panel (demo)</div>
+                        <div class="flex items-center gap-2 text-xs text-zinc-500">
+                            <div class="flex -space-x-2">
+                                <div class="w-7 h-7 rounded-full bg-blue-200 border-2 border-white flex items-center justify-center text-[10px] font-bold">PS</div>
+                                <div class="w-7 h-7 rounded-full bg-emerald-200 border-2 border-white flex items-center justify-center text-[10px] font-bold">JM</div>
+                                <div class="w-7 h-7 rounded-full bg-amber-200 border-2 border-white flex items-center justify-center text-[10px] font-bold">TK</div>
+                            </div>
+                            <span>3 lawyers available • QLD criminal &amp; traffic specialists</span>
+                        </div>
+                    </div>
+
+                    <div class="text-[10px] text-zinc-400">Demo prototype. A production version requires licensed lawyers, insurance, and Privacy Act compliance.</div>
+                </div>
+
+                <!-- CATEGORY SELECTION -->
+                <div id="category-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-4">
+                        <button onclick="showSection('home-section')" class="text-zinc-400 hover:text-zinc-600"><i class="fa-solid fa-arrow-left text-xl"></i></button>
+                        <div class="font-semibold text-lg">What do you need help with?</div>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-4 text-xs text-amber-900">
+                        Select a category so we can match you to the right independent lawyer. This is not legal advice.
+                    </div>
+
+                    <div class="space-y-2 mb-5" id="category-list">
+                        <button onclick="selectCategory(this, 'traffic')" class="category-card w-full border border-zinc-200 rounded-2xl p-4 text-left flex items-center gap-3">
+                            <i class="fa-solid fa-car text-blue-700 text-lg w-6"></i>
+                            <div><div class="font-semibold text-sm">Traffic / Drug Driving</div><div class="text-xs text-zinc-500">RBT, saliva tests, licences</div></div>
+                        </button>
+                        <button onclick="selectCategory(this, 'criminal')" class="category-card w-full border border-zinc-200 rounded-2xl p-4 text-left flex items-center gap-3">
+                            <i class="fa-solid fa-gavel text-blue-700 text-lg w-6"></i>
+                            <div><div class="font-semibold text-sm">Criminal Matters</div><div class="text-xs text-zinc-500">Arrest, questioning, charges</div></div>
+                        </button>
+                        <button onclick="selectCategory(this, 'complaint')" class="category-card w-full border border-zinc-200 rounded-2xl p-4 text-left flex items-center gap-3">
+                            <i class="fa-solid fa-shield text-blue-700 text-lg w-6"></i>
+                            <div><div class="font-semibold text-sm">Complaints Against Police</div><div class="text-xs text-zinc-500">Misconduct, use of force</div></div>
+                        </button>
+                        <button onclick="selectCategory(this, 'general')" class="category-card w-full border border-zinc-200 rounded-2xl p-4 text-left flex items-center gap-3">
+                            <i class="fa-solid fa-user-shield text-blue-700 text-lg w-6"></i>
+                            <div><div class="font-semibold text-sm">General Police Interaction</div><div class="text-xs text-zinc-500">Stopped, searched, questioned</div></div>
+                        </button>
+                        <button onclick="selectCategory(this, 'cannabis')" class="category-card w-full border border-zinc-200 rounded-2xl p-4 text-left flex items-center gap-3">
+                            <i class="fa-solid fa-leaf text-emerald-700 text-lg w-6"></i>
+                            <div><div class="font-semibold text-sm">Medicinal Cannabis Related</div><div class="text-xs text-zinc-500">Prescription, driving, workplace</div></div>
+                        </button>
+                    </div>
+
+                    <button onclick="startMatching()" id="match-btn" disabled
+                            class="w-full py-4 bg-blue-800 text-white rounded-2xl font-semibold text-sm disabled:opacity-40">
+                        Find Available Lawyer
+                    </button>
+                </div>
+
+                <!-- PRE-CALL CHECKLIST -->
+                <div id="precall-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-4">
+                        <button onclick="showSection('category-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Before you connect</div>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-4 text-sm">
+                        <div class="font-semibold text-blue-900 mb-2">General reminders (not legal advice)</div>
+                        <ul class="text-blue-800 text-xs space-y-2 list-disc pl-4">
+                            <li>Remain calm and polite where possible.</li>
+                            <li>Comply with lawful directions (ID, breath/saliva tests when required).</li>
+                            <li>You may choose not to answer questions that could incriminate you — but you should still provide name and address when lawfully required.</li>
+                            <li>Do not resist lawful arrest — resistance can be a separate offence.</li>
+                        </ul>
+                    </div>
+
+                    <label class="flex items-start gap-3 mb-3 cursor-pointer text-xs">
+                        <input type="checkbox" id="precall-checkbox" class="mt-1 rounded">
+                        <span>I understand I must comply with lawful police directions and that the lawyer will provide advice specific to my situation.</span>
+                    </label>
+
+                    <label class="flex items-start gap-3 mb-4 cursor-pointer text-xs bg-red-50 border border-red-100 rounded-2xl p-3">
+                        <input type="checkbox" id="emergency-alert-checkbox" class="mt-1 rounded" checked>
+                        <span><strong>Alert emergency contacts</strong> — send SMS with my live location when I connect (demo). <button type="button" onclick="showSection('emergency-section')" class="text-red-700 underline">Manage contacts</button></span>
+                    </label>
+
+                    <button onclick="startPoliceFlow()" id="precall-btn" disabled
+                            class="w-full py-4 bg-emerald-600 text-white rounded-2xl font-semibold text-sm disabled:opacity-40">
+                        Proceed to Video Connect
+                    </button>
+                </div>
+
+                <!-- CONNECT / MATCHING -->
+                <div id="connect-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-5">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left text-xl"></i></button>
+                        <div class="font-semibold text-xl">Connecting...</div>
+                    </div>
+
+                    <div class="bg-zinc-50 border border-zinc-200 rounded-3xl p-6 text-center mb-6">
+                        <div class="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-user-tie text-blue-700 text-4xl"></i>
+                        </div>
+                        <div id="matching-status" class="font-semibold text-lg">Searching panel...</div>
+                        <div id="matching-detail" class="text-sm text-zinc-500 mt-1">Queensland specialists</div>
+                        <div class="mt-6">
+                            <div class="h-2 bg-zinc-200 rounded-full overflow-hidden">
+                                <div id="progress-bar" class="h-2 bg-blue-600 transition-all duration-1000" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="lawyer-found" class="hidden">
+                        <div class="lawyer-card bg-white border border-zinc-200 rounded-3xl p-5 mb-4">
+                            <div class="flex gap-x-4">
+                                <div class="w-14 h-14 bg-zinc-200 rounded-2xl overflow-hidden flex-shrink-0">
+                                    <img src="https://i.pravatar.cc/56?img=28" alt="" class="w-full h-full object-cover">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-semibold">Dr. Priya Sharma</div>
+                                    <div class="text-xs text-zinc-500">Partner: Gold Coast Criminal Law Group</div>
+                                    <div class="text-sm text-emerald-600 mt-1">Available now</div>
+                                    <div class="text-[10px] text-zinc-400 mt-1">Practising cert: QLD #S1234567 (demo)</div>
+                                    <div class="text-xs text-zinc-500 mt-1">Specialist: Police interactions, drug driving</div>
+                                </div>
+                            </div>
+                            <div class="mt-3 pt-3 border-t text-[10px] text-zinc-500">
+                                Independent legal practitioner. Advice provided by lawyer, not ShieldAU. Client care agreement applies.
+                            </div>
+                        </div>
+
+                        <div class="bg-zinc-50 rounded-2xl p-4 mb-4 text-xs text-zinc-600 space-y-2">
+                            <div class="font-semibold text-zinc-800">Billing from your Shield Credit</div>
+                            <div class="flex justify-between"><span>Lawyer rate</span><span id="match-hourly-rate">$360/hr</span></div>
+                            <div class="flex justify-between"><span>First 15 minutes (minimum)</span><span id="match-first-block">$90.00</span></div>
+                            <div class="flex justify-between"><span>Then per minute (16–60 min)</span><span id="match-per-min">$6.00/min</span></div>
+                            <div class="flex justify-between"><span>After 60 minutes</span><span id="match-hourly-block">$360/hr blocks</span></div>
+                            <div class="pt-2 border-t flex justify-between font-semibold text-zinc-800">
+                                <span>Your balance</span><span id="match-wallet-balance">$149.00</span>
+                            </div>
+                            <div class="text-[10px] text-zinc-500">Credit deducted at end of call. ShieldAU pays the independent lawyer from your subscription pool.</div>
+                        </div>
+
+                        <button onclick="simulateCall()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-3xl flex items-center justify-center gap-x-2">
+                            <i class="fa-solid fa-video"></i>
+                            <span>START VIDEO SESSION (DEMO)</span>
+                        </button>
+                        <div class="text-center mt-3">
+                            <button onclick="showSection('home-section')" class="text-xs text-zinc-400">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIDEO CALL -->
+                <div id="call-section" class="section">
+                    <div id="emergency-banner" class="hidden emergency-sent-banner bg-red-600 text-white text-[10px] px-3 py-2 rounded-xl mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span id="emergency-banner-text">Emergency alert sent</span>
+                    </div>
+
+                    <div class="video-stage mb-3">
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-white z-10">
+                            <img src="https://i.pravatar.cc/200?img=28" alt="" class="w-24 h-24 rounded-full border-4 border-emerald-500 object-cover mb-3 shadow-lg">
+                            <div class="font-semibold text-lg">Dr. Priya Sharma</div>
+                            <div class="text-xs text-emerald-300 mt-1 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-red-500 rounded-full rec-dot"></span>
+                                LIVE • <span id="call-timer">00:00</span>
+                            </div>
+                            <div class="text-[10px] text-zinc-400 mt-2 px-6 text-center">Position device so officer can see your lawyer on screen (demo)</div>
+                        </div>
+                        <div class="video-scanline absolute inset-0 z-20"></div>
+                        <div class="video-pip z-30">
+                            <div class="w-full h-full bg-zinc-800 flex flex-col items-center justify-center text-white">
+                                <i class="fa-solid fa-user text-2xl text-zinc-500 mb-1"></i>
+                                <span class="text-[9px] text-zinc-400">You</span>
+                            </div>
+                        </div>
+                        <div class="absolute top-3 left-3 z-30 flex gap-2">
+                            <span class="text-[9px] bg-black/50 text-white px-2 py-1 rounded-full"><i class="fa-solid fa-lock mr-1"></i>Agora E2E</span>
+                            <span class="text-[9px] bg-emerald-600/80 text-white px-2 py-1 rounded-full" id="pip-badge">PiP ready</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-zinc-900 text-white rounded-2xl p-3 mb-3 text-xs" id="call-advice-panel">
+                        <div class="text-zinc-400 text-[10px] mb-1">LAWYER (independent — not ShieldAU)</div>
+                        <div id="call-advice">"Stay calm. Show the officer I am your lawyer on screen. Comply with lawful directions. Do not answer incriminating questions until I advise you."</div>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-2.5 mb-3 flex justify-between items-center text-xs">
+                        <span class="text-blue-800">Shield Credit</span>
+                        <div class="text-right">
+                            <span class="font-semibold text-blue-900" id="call-running-cost">$90.00</span>
+                            <div class="text-[10px] text-blue-600" id="call-billing-phase">First 15 min block</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-2 mb-3">
+                        <button onclick="toggleMute()" id="mute-btn" class="py-2.5 bg-zinc-100 rounded-xl text-[10px] font-medium flex flex-col items-center gap-1">
+                            <i class="fa-solid fa-microphone text-sm"></i> Mute
+                        </button>
+                        <button onclick="toggleCamera()" id="camera-btn" class="py-2.5 bg-zinc-100 rounded-xl text-[10px] font-medium flex flex-col items-center gap-1">
+                            <i class="fa-solid fa-video text-sm"></i> Cam
+                        </button>
+                        <button onclick="showGloveboxInCall()" class="py-2.5 bg-blue-100 text-blue-800 rounded-xl text-[10px] font-medium flex flex-col items-center gap-1">
+                            <i class="fa-solid fa-id-card text-sm"></i> ID
+                        </button>
+                        <button onclick="shareNotesWithLawyer()" class="py-2.5 bg-zinc-100 rounded-xl text-[10px] font-medium flex flex-col items-center gap-1">
+                            <i class="fa-solid fa-share text-sm"></i> Notes
+                        </button>
+                    </div>
+
+                    <button onclick="showPinModal()" class="w-full py-3.5 bg-red-600 text-white rounded-2xl font-semibold flex items-center justify-center gap-x-2 text-sm">
+                        <i class="fa-solid fa-lock"></i> End Session (PIN required)
+                    </button>
+                    <div class="text-[10px] text-center text-zinc-400 mt-2">Recording available only if you &amp; lawyer both consent (demo: off)</div>
+                </div>
+
+                <!-- POST-CALL -->
+                <div id="postcall-section" class="section">
+                    <div class="text-center mb-5">
+                        <div class="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fa-solid fa-check text-emerald-600 text-2xl"></i>
+                        </div>
+                        <div class="font-semibold text-lg">Video session ended</div>
+                        <div class="text-xs text-zinc-500">Summary from your independent lawyer (demo)</div>
+                    </div>
+
+                    <div class="bg-white border rounded-2xl p-4 mb-4 text-sm space-y-3">
+                        <div><span class="text-xs text-zinc-500">Duration</span><div id="postcall-duration">—</div></div>
+                        <div><span class="text-xs text-zinc-500">Next steps (from lawyer)</span><div class="text-xs text-zinc-600">Do not discuss the matter with anyone except your lawyer. If charged, contact our office within 24 hours. Preserve any dashcam or witness details.</div></div>
+                        <div>
+                            <span class="text-xs text-zinc-500">Billing breakdown</span>
+                            <div class="text-xs mt-1 space-y-1" id="postcall-billing-breakdown"></div>
+                            <div class="flex justify-between font-semibold text-sm mt-2 pt-2 border-t">
+                                <span>Deducted from Shield Credit</span>
+                                <span id="postcall-total">—</span>
+                            </div>
+                            <div class="text-[10px] text-zinc-500 mt-1">Remaining balance: <span id="postcall-remaining" class="font-medium">—</span></div>
+                        </div>
+                    </div>
+
+                    <button onclick="showSection('document-section')" class="w-full py-3 bg-blue-100 text-blue-800 rounded-2xl text-sm font-semibold mb-2">Update incident notes</button>
+                    <button onclick="showSection('home-section')" class="w-full py-3 bg-zinc-100 rounded-2xl text-sm font-semibold">Back to home</button>
+                </div>
+
+                <!-- RIGHTS HUB -->
+                <div id="rights-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Know Your Rights</div>
+                    </div>
+
+                    <div class="info-only-badge inline-block px-2 py-1 rounded-full mb-3">General information only — not legal advice</div>
+
+                    <div class="flex gap-2 mb-4">
+                        <button onclick="showRightsState('qld')" id="rights-tab-qld" class="rights-tab flex-1 py-2 rounded-xl text-xs font-semibold bg-blue-800 text-white">QLD</button>
+                        <button onclick="showRightsState('nsw')" id="rights-tab-nsw" class="rights-tab flex-1 py-2 rounded-xl text-xs font-semibold bg-zinc-100 text-zinc-600">NSW</button>
+                        <button onclick="showRightsState('vic')" id="rights-tab-vic" class="rights-tab flex-1 py-2 rounded-xl text-xs font-semibold bg-zinc-100 text-zinc-600">VIC</button>
+                    </div>
+
+                    <!-- QLD -->
+                    <div id="rights-content-qld" class="rights-content space-y-3 text-sm">
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Right to Silence</div>
+                            <p class="text-zinc-600 text-xs">You generally have the right to remain silent and not answer questions that may incriminate you. You should still provide your name and address when lawfully required under the <em>Police Powers and Responsibilities Act 2000</em> (Qld).</p>
+                        </div>
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Drug &amp; Alcohol Testing</div>
+                            <p class="text-zinc-600 text-xs">You must comply with lawful directions to provide a breath, blood, or saliva sample. Queensland roadside drug testing detects THC, methamphetamine, and MDMA. Refusing a lawful test is a separate offence with serious penalties.</p>
+                            <div class="text-[10px] text-amber-700 mt-2 font-medium">QLD has zero-tolerance THC in saliva — prescription is not a defence to drug driving.</div>
+                        </div>
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Search &amp; Seizure</div>
+                            <p class="text-zinc-600 text-xs">Police may search you, your vehicle, or property only with lawful authority — e.g. a warrant, your consent, or specific powers under PPRA.</p>
+                        </div>
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Complaints &amp; Footage</div>
+                            <p class="text-zinc-600 text-xs">Complaints: QPS Ethical Standards Command or Crime and Corruption Commission (CCC). You may apply for body-worn camera footage through QPS.</p>
+                        </div>
+                    </div>
+
+                    <!-- NSW -->
+                    <div id="rights-content-nsw" class="rights-content hidden space-y-3 text-sm">
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Right to Silence</div>
+                            <p class="text-zinc-600 text-xs">Under the <em>Law Enforcement (Powers and Responsibilities) Act 2002</em> (NSW), you must provide your name and address in certain situations. You generally do not have to answer other questions or participate in an interview beyond identification requirements.</p>
+                        </div>
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Drug &amp; Alcohol Testing</div>
+                            <p class="text-zinc-600 text-xs">You must comply with lawful breath, blood, oral fluid, or urine tests. Refusing is a serious offence. NSW has introduced a medicinal cannabis defence for oral fluid THC in limited circumstances — subject to strict conditions including not being impaired (law reformed 2023–2024; check current thresholds).</p>
+                            <div class="text-[10px] text-amber-700 mt-2 font-medium">Always comply with testing. Do not rely on this summary — laws are complex and change.</div>
+                        </div>
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Search Powers</div>
+                            <p class="text-zinc-600 text-xs">Police searches in NSW require lawful authority under LEPRA — e.g. warrant, arrest, reasonable suspicion (personal search), or vehicle search powers. You can ask: "Am I under arrest?" and "What is the reason for the search?"</p>
+                        </div>
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Custody &amp; Legal Help</div>
+                            <p class="text-zinc-600 text-xs">If detained, you have the right to contact a lawyer. NSW Police must provide reasonable facilities. Legal Aid NSW provides advice and duty lawyers at court. Custody managers oversee your welfare in custody.</p>
+                        </div>
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Complaints</div>
+                            <p class="text-zinc-600 text-xs">NSW Police Force complaints: Law Enforcement Conduct Commission (LECC) for serious misconduct; NSW Police Professional Standards Command for other complaints.</p>
+                        </div>
+                    </div>
+
+                    <!-- VIC -->
+                    <div id="rights-content-vic" class="rights-content hidden space-y-3 text-sm">
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Right to Silence</div>
+                            <p class="text-zinc-600 text-xs">Under the <em>Crimes Act 1958</em> (Vic) and <em>Summary Offences Act 1966</em> (Vic), you must provide name and address when lawfully required. You generally may refuse to answer further questions or participate in a recorded interview without legal advice.</p>
+                        </div>
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Drug &amp; Alcohol Testing</div>
+                            <p class="text-zinc-600 text-xs">You must comply with preliminary and evidential breath tests and oral fluid tests. Victoria Police have published discretion guidelines for medicinal cannabis patients in some circumstances — but compliance with testing is still mandatory and charges remain possible.</p>
+                            <div class="text-[10px] text-amber-700 mt-2 font-medium">Never refuse a lawful test. Seek specific legal advice if you hold a medicinal cannabis prescription.</div>
+                        </div>
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Search &amp; Arrest</div>
+                            <p class="text-zinc-600 text-xs">Searches require powers under Victorian law — warrant, arrest, or specific statutory powers. If arrested, you have the right to communicate with a friend, relative, or lawyer (subject to police procedures).</p>
+                        </div>
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Legal Assistance</div>
+                            <p class="text-zinc-600 text-xs">Victoria Legal Aid provides advice and duty lawyers. After-hours bail service available in some circumstances. For police interviews, request a lawyer before answering questions.</p>
+                        </div>
+                        <div class="bg-white border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Complaints</div>
+                            <p class="text-zinc-600 text-xs">Complaints about Victoria Police: IBAC (Independent Broad-based Anti-corruption Commission) for serious matters; Victoria Police Professional Standards Command for other conduct issues.</p>
+                        </div>
+                    </div>
+
+                    <button onclick="showSection('aboriginal-section')" class="w-full mt-4 border-2 border-amber-300 bg-amber-50 rounded-2xl p-4 text-left">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-amber-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-people-group text-white"></i>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-sm text-amber-900">Aboriginal &amp; Torres Strait Islander Legal Services</div>
+                                <div class="text-xs text-amber-800">Free, culturally safe legal help — often available 24/7</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-amber-600 ml-auto"></i>
+                        </div>
+                    </button>
+
+                    <div class="mt-4 p-3 rounded-2xl text-[10px] bg-amber-50 border border-amber-200 text-amber-900">
+                        Reviewed by lawyers (demo label). Laws change — speak to a qualified lawyer for advice specific to your situation.
+                    </div>
+                </div>
+
+                <!-- ABORIGINAL LEGAL SERVICES -->
+                <div id="aboriginal-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('rights-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Aboriginal Legal Services</div>
+                    </div>
+
+                    <div class="info-only-badge inline-block px-2 py-1 rounded-full mb-4">Referral information only</div>
+
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4 text-xs text-amber-900">
+                        Aboriginal and Torres Strait Islander Legal Services (ATSILS) provide <strong>free</strong> legal help to Aboriginal and Torres Strait Islander people. Many offer 24-hour custody notification and police watch roles. ShieldAU complements — does not replace — these services.
+                    </div>
+
+                    <div class="space-y-3 text-xs">
+                        <a href="https://www.atsils.org.au/" target="_blank" rel="noopener" class="block border rounded-2xl p-4 hover:border-amber-400 transition-colors">
+                            <div class="font-semibold text-sm">ATSILS Queensland</div>
+                            <div class="text-zinc-600 mt-1">State-wide criminal, civil, and family law. 24hr custody helpline.</div>
+                            <div class="text-blue-700 mt-2">atsils.org.au →</div>
+                        </a>
+                        <a href="https://www.alsnswact.org.au/" target="_blank" rel="noopener" class="block border rounded-2xl p-4 hover:border-amber-400 transition-colors">
+                            <div class="font-semibold text-sm">ALS NSW/ACT</div>
+                            <div class="text-zinc-600 mt-1">Aboriginal Legal Service for NSW and ACT. Police custody legal advice.</div>
+                            <div class="text-blue-700 mt-2">alsnswact.org.au →</div>
+                        </a>
+                        <a href="https://www.vals.org.au/" target="_blank" rel="noopener" class="block border rounded-2xl p-4 hover:border-amber-400 transition-colors">
+                            <div class="font-semibold text-sm">VALS — Victoria</div>
+                            <div class="text-zinc-600 mt-1">Victorian Aboriginal Legal Service. Criminal, civil, and family law.</div>
+                            <div class="text-blue-700 mt-2">vals.org.au →</div>
+                        </a>
+                        <a href="https://www.alswa.org.au/" target="_blank" rel="noopener" class="block border rounded-2xl p-4 hover:border-amber-400 transition-colors">
+                            <div class="font-semibold text-sm">ALSWA — Western Australia</div>
+                            <div class="text-zinc-600 mt-1">Aboriginal Legal Service of WA. Criminal and civil assistance.</div>
+                            <div class="text-blue-700 mt-2">alswa.org.au →</div>
+                        </a>
+                        <a href="https://www.natsils.org.au/" target="_blank" rel="noopener" class="block border rounded-2xl p-4 hover:border-amber-400 transition-colors">
+                            <div class="font-semibold text-sm">NATSILS (National)</div>
+                            <div class="text-zinc-600 mt-1">Peak body — find your local ATSILS anywhere in Australia.</div>
+                            <div class="text-blue-700 mt-2">natsils.org.au →</div>
+                        </a>
+                    </div>
+
+                    <div class="mt-4 p-3 rounded-2xl text-[10px] bg-zinc-50 border text-zinc-600">
+                        <strong>Custody Notification Scheme:</strong> Police must notify ATSILS when an Aboriginal or Torres Strait Islander person is detained. This is a legal requirement in participating jurisdictions. ATSILS lawyers can provide advice at the police station at no cost.
+                    </div>
+                </div>
+
+                <!-- DIGITAL GLOVEBOX -->
+                <div id="glovebox-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Digital Glovebox</div>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-3 mb-4 text-[10px] text-blue-900">
+                        <i class="fa-solid fa-lock mr-1"></i>
+                        Encrypted document vault (demo: localStorage). Store ID, licence, insurance — quick access during a police stop. Australia-hosted AES-256 in production.
+                    </div>
+
+                    <div id="glovebox-items" class="space-y-2 mb-4"></div>
+
+                    <div class="border rounded-2xl p-4 mb-4">
+                        <div class="font-semibold text-sm mb-3">Add document</div>
+                        <select id="glovebox-type" class="w-full border rounded-xl px-3 py-2 text-sm mb-2">
+                            <option value="drivers_licence">Driver's Licence</option>
+                            <option value="photo_id">Photo ID</option>
+                            <option value="medicare">Medicare Card</option>
+                            <option value="insurance">Vehicle Insurance</option>
+                            <option value="rego">Registration</option>
+                            <option value="prescription">Medicinal Prescription</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <input type="text" id="glovebox-label" placeholder="Label (e.g. QLD Licence)" class="w-full border rounded-xl px-3 py-2 text-sm mb-2">
+                        <input type="file" id="glovebox-file" accept="image/*,.pdf" class="w-full text-xs mb-3">
+                        <label class="flex items-start gap-2 text-[10px] mb-3 cursor-pointer">
+                            <input type="checkbox" id="glovebox-consent" class="mt-0.5 rounded">
+                            <span>I consent to encrypted storage of this document on ShieldAU servers (demo: browser only).</span>
+                        </label>
+                        <button onclick="addGloveboxDoc()" class="w-full py-2.5 bg-blue-800 text-white rounded-xl text-sm font-semibold">Save to Glovebox</button>
+                    </div>
+                </div>
+
+                <!-- EMERGENCY CONTACTS -->
+                <div id="emergency-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Emergency Contacts</div>
+                    </div>
+
+                    <div class="bg-red-50 border border-red-200 rounded-2xl p-4 mb-4 text-xs text-red-900">
+                        When you connect to a lawyer, trusted contacts receive an <strong>SMS alert</strong> with your live location and a link to your session status (demo). Requires explicit consent below.
+                    </div>
+
+                    <label class="flex items-start gap-3 mb-4 cursor-pointer text-xs border rounded-2xl p-3">
+                        <input type="checkbox" id="emergency-master-toggle" class="mt-1 rounded" checked onchange="saveEmergencySettings()">
+                        <span>Enable emergency alerts when I request lawyer support</span>
+                    </label>
+
+                    <div id="emergency-contacts-list" class="space-y-2 mb-4"></div>
+
+                    <div class="border rounded-2xl p-4 mb-4">
+                        <div class="font-semibold text-sm mb-3">Add contact</div>
+                        <input type="text" id="emergency-name" placeholder="Name" class="w-full border rounded-xl px-3 py-2 text-sm mb-2">
+                        <input type="tel" id="emergency-phone" placeholder="Mobile e.g. 04XX XXX XXX" class="w-full border rounded-xl px-3 py-2 text-sm mb-3">
+                        <button onclick="addEmergencyContact()" class="w-full py-2.5 bg-red-600 text-white rounded-xl text-sm font-semibold">Add Contact</button>
+                    </div>
+
+                    <button onclick="testEmergencyAlert()" class="w-full py-3 bg-zinc-100 rounded-2xl text-sm font-semibold text-zinc-700">
+                        <i class="fa-solid fa-flask mr-1"></i> Send test alert (demo)
+                    </button>
+
+                    <div id="emergency-log" class="mt-4 space-y-2"></div>
+                </div>
+
+                <!-- FAMILY PLAN -->
+                <div id="family-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Family Plan</div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-blue-800 to-blue-900 rounded-2xl p-4 text-white mb-4">
+                        <div class="text-sm opacity-90">Shield Family</div>
+                        <div class="text-xs opacity-75 mt-1">$79/mo → $70 shared Shield Credit • Up to 5 members</div>
+                        <div class="text-[10px] mt-2 bg-white/10 rounded-lg px-2 py-1 inline-block">Primary account: Lewis • Billing centralized</div>
+                    </div>
+
+                    <div class="text-xs font-semibold text-zinc-700 mb-2">Sub-accounts</div>
+                    <div id="family-members-list" class="space-y-2 mb-4"></div>
+
+                    <div class="border rounded-2xl p-4 mb-4">
+                        <div class="font-semibold text-sm mb-3">Invite family member</div>
+                        <input type="text" id="family-name" placeholder="Full name" class="w-full border rounded-xl px-3 py-2 text-sm mb-2">
+                        <input type="email" id="family-email" placeholder="Email address" class="w-full border rounded-xl px-3 py-2 text-sm mb-2">
+                        <select id="family-relation" class="w-full border rounded-xl px-3 py-2 text-sm mb-3">
+                            <option>Partner / Spouse</option>
+                            <option>Child (18+)</option>
+                            <option>Parent</option>
+                            <option>Sibling</option>
+                            <option>Other</option>
+                        </select>
+                        <button onclick="addFamilyMember()" class="w-full py-2.5 bg-blue-800 text-white rounded-xl text-sm font-semibold">Send Invite (demo)</button>
+                    </div>
+
+                    <div class="text-[10px] text-zinc-500 p-3 bg-zinc-50 rounded-xl">
+                        Each member gets their own app login. Lawyer connections draw from shared Shield Credit. Members can set their own emergency contacts and glovebox documents.
+                    </div>
+                </div>
+
+                <!-- DOCUMENT -->
+                <div id="document-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Document What Happened</div>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-4 text-[10px] text-amber-900">
+                        <strong>Your personal notes only.</strong> ShieldAU does not analyse or interpret these notes. They are not legal advice. In production, notes would be encrypted (Australia-hosted) with explicit consent.
+                    </div>
+
+                    <div class="bg-white border border-zinc-200 rounded-3xl p-5">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-xs font-medium text-zinc-500">Date &amp; Time</label>
+                                <input type="text" id="incident-time" value="25 June 2026, 11:39am" class="w-full border rounded-2xl px-4 py-2.5 text-sm">
+                            </div>
+                            <div>
+                                <label class="text-xs font-medium text-zinc-500">Location</label>
+                                <input type="text" id="incident-location" placeholder="e.g. Gold Coast Highway, Biggera Waters" class="w-full border rounded-2xl px-4 py-2.5 text-sm">
+                            </div>
+                            <div>
+                                <label class="text-xs font-medium text-zinc-500">Officer name / badge number (if known)</label>
+                                <input type="text" id="incident-officer" placeholder="Optional" class="w-full border rounded-2xl px-4 py-2.5 text-sm">
+                            </div>
+                            <div>
+                                <label class="text-xs font-medium text-zinc-500">Witnesses</label>
+                                <input type="text" id="incident-witnesses" placeholder="Names or descriptions" class="w-full border rounded-2xl px-4 py-2.5 text-sm">
+                            </div>
+                            <div>
+                                <label class="text-xs font-medium text-zinc-500">What happened (factual only)</label>
+                                <textarea id="incident-notes" rows="4" class="w-full border rounded-3xl px-4 py-3 text-sm" placeholder="Describe events calmly and factually..."></textarea>
+                            </div>
+                            <label class="flex items-start gap-2 text-[10px] cursor-pointer">
+                                <input type="checkbox" id="consent-checkbox" class="mt-0.5 rounded">
+                                <span>I consent to ShieldAU storing these notes securely for my access and optional sharing with my connected lawyer.</span>
+                            </label>
+                            <button onclick="saveNotes()" class="w-full py-3 bg-blue-700 text-white rounded-2xl font-semibold text-sm">Save Secure Note (Demo)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMPLAINTS -->
+                <div id="complaints-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Official Complaint Channels (QLD)</div>
+                    </div>
+
+                    <div class="info-only-badge inline-block px-2 py-1 rounded-full mb-4">General information only</div>
+
+                    <div class="space-y-3 text-xs">
+                        <div class="border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">QPS Ethical Standards Command</div>
+                            <p class="text-zinc-600 mb-2">For complaints about Queensland Police Service conduct — use of force, rudeness, procedural issues.</p>
+                            <a href="https://www.police.qld.gov.au/units/ethical-standards-command" target="_blank" rel="noopener" class="text-blue-700 underline">police.qld.gov.au → Ethical Standards</a>
+                        </div>
+                        <div class="border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Crime and Corruption Commission (CCC)</div>
+                            <p class="text-zinc-600 mb-2">For serious misconduct, corruption, or if dissatisfied with QPS internal handling.</p>
+                            <a href="https://www.ccc.qld.gov.au" target="_blank" rel="noopener" class="text-blue-700 underline">ccc.qld.gov.au</a>
+                        </div>
+                        <div class="border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Body-Worn Camera Footage</div>
+                            <p class="text-zinc-600 mb-2">You can apply to QPS for access to footage of your interaction. Time limits may apply — document the date, time, and location.</p>
+                            <p class="text-zinc-500">Contact QPS or see Right to Information processes on the QPS website.</p>
+                        </div>
+                        <div class="border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Helpful information to include</div>
+                            <ul class="text-zinc-600 list-disc pl-4 space-y-1">
+                                <li>Date, time, exact location</li>
+                                <li>Officer names or badge numbers</li>
+                                <li>Witness details</li>
+                                <li>Your factual account (avoid speculation)</li>
+                                <li>Photos of injuries or damage</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MEDICINAL CANNABIS -->
+                <div id="cannabis-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Medicinal Cannabis (QLD)</div>
+                    </div>
+
+                    <div class="info-only-badge inline-block px-2 py-1 rounded-full mb-4">General information only — laws change frequently</div>
+
+                    <div class="space-y-3 text-xs">
+                        <div class="border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Driving in Queensland</div>
+                            <p class="text-zinc-600">Queensland has a <strong>zero-tolerance</strong> approach to THC in saliva for licence holders. A valid prescription does not provide a defence to drug driving offences in QLD. You can be charged even if you used cannabis days earlier and are not impaired.</p>
+                        </div>
+                        <div class="border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Police Interactions</div>
+                            <p class="text-zinc-600">If stopped, you must comply with lawful directions including saliva testing. You may need to show your prescription or pharmacy label if cannabis is found — but this does not prevent a drug driving charge.</p>
+                        </div>
+                        <div class="border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Workplace</div>
+                            <p class="text-zinc-600">Employers may have drug policies that apply regardless of prescription. General information only — workplace rights depend on your contract, industry, and specific circumstances.</p>
+                        </div>
+                        <div class="border rounded-2xl p-4">
+                            <div class="font-semibold mb-1">Other states (brief)</div>
+                            <p class="text-zinc-600">NSW has introduced a THC threshold for medicinal cannabis patients (subject to conditions). VIC has discretion guidelines. WA and QLD remain stricter. Always check current law in your state.</p>
+                        </div>
+                    </div>
+
+                    <button onclick="selectCategoryQuick('cannabis')" class="w-full mt-4 py-3 bg-emerald-600 text-white rounded-2xl text-sm font-semibold">
+                        Connect to cannabis-law specialist (demo)
+                    </button>
+                </div>
+
+                <!-- TERMS -->
+                <div id="terms-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('more-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Terms of Service (Summary)</div>
+                    </div>
+                    <div class="text-xs text-zinc-600 space-y-3">
+                        <p><strong>1. Nature of service.</strong> ShieldAU Pty Ltd operates a technology and referral platform. We are not a law firm and do not provide legal advice.</p>
+                        <p><strong>2. Independent lawyers.</strong> Legal advice is provided solely by independent Australian legal practitioners who hold current practising certificates. Each lawyer is responsible for their own advice.</p>
+                        <p><strong>3. No guarantee.</strong> We do not guarantee outcomes, availability, or response times.</p>
+                        <p><strong>4. User obligations.</strong> You must comply with all applicable laws and lawful police directions.</p>
+                        <p><strong>5. Fees.</strong> Lawyer fees are set by the law firm or lawyer. ShieldAU may charge a platform/referral fee disclosed at connection.</p>
+                        <p><strong>6. Limitation of liability.</strong> To the extent permitted by law, ShieldAU's liability is limited to the technology service fee paid.</p>
+                        <p class="text-zinc-400">Full terms would be reviewed by Australian lawyers before launch.</p>
+                    </div>
+                </div>
+
+                <!-- PRIVACY -->
+                <div id="privacy-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('more-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Privacy Policy (Summary)</div>
+                    </div>
+                    <div class="text-xs text-zinc-600 space-y-3">
+                        <p><strong>Compliance.</strong> We comply with the Privacy Act 1988 (Cth) and Australian Privacy Principles (APPs).</p>
+                        <p><strong>Data collected.</strong> Account details, incident notes (with consent), connection logs, and payment information. We collect only what is necessary.</p>
+                        <p><strong>Sensitive information.</strong> Legal and health-related data receives heightened protection, explicit consent, encryption at rest and in transit, and Australia-preferred hosting.</p>
+                        <p><strong>Call recordings.</strong> ShieldAU does not record calls unless both user and lawyer explicitly consent for a specific purpose (e.g. lawyer's file).</p>
+                        <p><strong>Your rights.</strong> Access, correction, and deletion of your data. Contact privacy@shieldau.com.au (demo).</p>
+                        <p><strong>Retention.</strong> Notes retained per your settings; deleted on request unless required for legal obligations.</p>
+                    </div>
+                </div>
+
+                <!-- WALLET / SUBSCRIPTION -->
+                <div id="wallet-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-4">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Shield Credit</div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-3xl p-5 text-white mb-4">
+                        <div class="text-sm opacity-90">Available credit</div>
+                        <div class="text-3xl font-semibold mt-1" id="wallet-balance-display">$149.00</div>
+                        <div class="text-xs opacity-80 mt-2">Shield Plus • Renews 25 July 2026</div>
+                    </div>
+
+                    <div class="border rounded-2xl p-4 mb-4 text-xs">
+                        <div class="font-semibold text-sm mb-2">How lawyer billing works</div>
+                        <ol class="text-zinc-600 space-y-2 list-decimal pl-4">
+                            <li><strong>First 15 minutes</strong> — charged as one block (25% of the lawyer's hourly rate), even if the call is shorter.</li>
+                            <li><strong>Minutes 16–60</strong> — billed per minute at the lawyer's hourly rate ÷ 60.</li>
+                            <li><strong>After 60 minutes</strong> — billed in full hourly blocks (no per-minute billing).</li>
+                        </ol>
+                        <div class="mt-3 p-2 bg-zinc-50 rounded-xl text-[10px] text-zinc-500">
+                            Example at $360/hr: 4 min call = $90 • 25 min = $150 • 75 min = $720
+                        </div>
+                    </div>
+
+                    <div class="font-semibold text-sm mb-2">Subscription plans (demo)</div>
+                    <div class="space-y-2 mb-4">
+                        <div class="border rounded-2xl p-4 opacity-60">
+                            <div class="flex justify-between items-center">
+                                <div><div class="font-semibold text-sm">Shield Basic</div><div class="text-xs text-zinc-500">$29/mo → $25 credit • Individual</div></div>
+                            </div>
+                        </div>
+                        <div class="border-2 border-emerald-500 bg-emerald-50 rounded-2xl p-4">
+                            <div class="flex justify-between items-center">
+                                <div><div class="font-semibold text-sm">Shield Plus</div><div class="text-xs text-zinc-600">$49/mo → $45 credit • Individual</div></div>
+                                <span class="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full">Active</span>
+                            </div>
+                        </div>
+                        <div class="border-2 border-blue-500 bg-blue-50 rounded-2xl p-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="font-semibold text-sm">Shield Family</div>
+                                    <div class="text-xs text-zinc-600">$79/mo → $70 shared credit • Up to 5 members</div>
+                                </div>
+                                <button onclick="showSection('family-section')" class="text-xs text-blue-700 font-medium">Manage</button>
+                            </div>
+                            <div class="text-[10px] text-zinc-500 mt-2">Sub-accounts, shared credit pool, per-member glovebox &amp; emergency contacts.</div>
+                        </div>
+                        <div class="border rounded-2xl p-4">
+                            <div class="flex justify-between items-center">
+                                <div><div class="font-semibold text-sm">Shield Pro</div><div class="text-xs text-zinc-500">$99/mo → $90 credit + priority</div></div>
+                                <button onclick="alert('Upgrade flow (demo)')" class="text-xs text-blue-700 font-medium">Upgrade</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border rounded-2xl p-4 text-xs text-zinc-600 mb-4">
+                        <div class="font-semibold text-zinc-800 mb-1">Why subscription + credit pool?</div>
+                        <p>Your monthly fee pre-funds lawyer payments. ShieldAU holds credit in trust and pays panel lawyers after each call — so lawyers get paid promptly and you never scramble for payment during a police stop.</p>
+                    </div>
+
+                    <button onclick="topUpWallet()" class="w-full py-3 bg-blue-800 text-white rounded-2xl text-sm font-semibold">Top up $50 credit (demo)</button>
+                </div>
+
+                <!-- MORE / SETTINGS -->
+                <div id="more-section" class="section">
+                    <div class="font-semibold text-lg mb-4">More</div>
+                    <div class="space-y-2">
+                        <button onclick="showSection('wallet-section')" class="w-full border rounded-2xl p-4 text-left flex items-center justify-between text-sm">
+                            <span><i class="fa-solid fa-wallet text-emerald-700 mr-2"></i> Shield Credit &amp; Plans</span>
+                            <span class="text-xs text-emerald-600 font-medium" id="more-wallet-balance">$149.00</span>
+                        </button>
+                        <button onclick="showSection('glovebox-section')" class="w-full border rounded-2xl p-4 text-left flex items-center justify-between text-sm">
+                            <span><i class="fa-solid fa-folder-closed text-blue-700 mr-2"></i> Digital Glovebox</span>
+                            <span class="text-xs text-zinc-400" id="more-glovebox-count">0 docs</span>
+                        </button>
+                        <button onclick="showSection('emergency-section')" class="w-full border rounded-2xl p-4 text-left flex items-center justify-between text-sm">
+                            <span><i class="fa-solid fa-bell text-red-600 mr-2"></i> Emergency Contacts</span>
+                            <span class="text-xs text-zinc-400" id="more-emergency-count">0 contacts</span>
+                        </button>
+                        <button onclick="showSection('family-section')" class="w-full border rounded-2xl p-4 text-left flex items-center justify-between text-sm">
+                            <span><i class="fa-solid fa-users text-blue-700 mr-2"></i> Family Plan</span>
+                            <i class="fa-solid fa-chevron-right text-zinc-300"></i>
+                        </button>
+                        <button onclick="showSection('terms-section')" class="w-full border rounded-2xl p-4 text-left flex items-center justify-between text-sm">
+                            <span><i class="fa-solid fa-file-contract text-blue-700 mr-2"></i> Terms of Service</span>
+                            <i class="fa-solid fa-chevron-right text-zinc-300"></i>
+                        </button>
+                        <button onclick="showSection('privacy-section')" class="w-full border rounded-2xl p-4 text-left flex items-center justify-between text-sm">
+                            <span><i class="fa-solid fa-user-shield text-blue-700 mr-2"></i> Privacy Policy</span>
+                            <i class="fa-solid fa-chevron-right text-zinc-300"></i>
+                        </button>
+                        <div class="border rounded-2xl p-4 text-sm">
+                            <div class="font-semibold mb-2">What's included</div>
+                            <div class="text-xs text-zinc-600 space-y-1">
+                                <div class="flex justify-between"><span>Rights &amp; complaint guides</span><span class="text-emerald-600">Free</span></div>
+                                <div class="flex justify-between"><span>Lawyer connections</span><span>From Shield Credit</span></div>
+                                <div class="flex justify-between"><span>Subscriptions from</span><span>$29/mo</span></div>
+                            </div>
+                        </div>
+                        <div class="border rounded-2xl p-4 text-xs text-zinc-500">
+                            <div class="font-semibold text-zinc-700 mb-1">Insurance (production)</div>
+                            Platform PI + public liability. Each panel lawyer carries own PII.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom nav -->
+            <div class="border-t px-2 py-3 bg-white flex justify-around text-xs" id="bottom-nav">
+                <button onclick="navTo('home-section', this)" class="nav-btn active flex flex-col items-center px-3 text-zinc-500">
+                    <i class="fa-solid fa-home text-lg mb-0.5"></i><span class="text-[10px]">Home</span>
+                </button>
+                <button onclick="navTo('rights-section', this)" class="nav-btn flex flex-col items-center px-3 text-zinc-500">
+                    <i class="fa-solid fa-balance-scale text-lg mb-0.5"></i><span class="text-[10px]">Rights</span>
+                </button>
+                <button onclick="navTo('glovebox-section', this)" class="nav-btn flex flex-col items-center px-3 text-zinc-500">
+                    <i class="fa-solid fa-folder-closed text-lg mb-0.5"></i><span class="text-[10px]">Glovebox</span>
+                </button>
+                <button onclick="navTo('more-section', this)" class="nav-btn flex flex-col items-center px-3 text-zinc-500">
+                    <i class="fa-solid fa-ellipsis text-lg mb-0.5"></i><span class="text-[10px]">More</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="text-center mt-4 text-[10px] text-zinc-500 px-4">
+            Non-functional demo. Production requires licensed lawyers, formal panel agreements, Privacy Act compliance, and Australian legal review.
+        </div>
+    </div>
+
+    <!-- PIN to end modal -->
+    <div id="pin-modal" class="modal-overlay">
+        <div class="bg-white rounded-3xl max-w-xs w-full p-6 shadow-2xl">
+            <div class="text-center mb-4">
+                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <i class="fa-solid fa-lock text-red-600 text-xl"></i>
+                </div>
+                <div class="font-semibold">Enter PIN to end session</div>
+                <div class="text-xs text-zinc-500 mt-1">Prevents accidental disconnect during police stop</div>
+            </div>
+            <div class="flex justify-center gap-2 mb-4" id="pin-display">
+                <div class="w-3 h-3 rounded-full bg-zinc-200 pin-dot"></div>
+                <div class="w-3 h-3 rounded-full bg-zinc-200 pin-dot"></div>
+                <div class="w-3 h-3 rounded-full bg-zinc-200 pin-dot"></div>
+                <div class="w-3 h-3 rounded-full bg-zinc-200 pin-dot"></div>
+            </div>
+            <div class="grid grid-cols-3 gap-3 mb-4" id="pin-pad">
+                <button onclick="pinPress('1')" class="pin-key">1</button>
+                <button onclick="pinPress('2')" class="pin-key">2</button>
+                <button onclick="pinPress('3')" class="pin-key">3</button>
+                <button onclick="pinPress('4')" class="pin-key">4</button>
+                <button onclick="pinPress('5')" class="pin-key">5</button>
+                <button onclick="pinPress('6')" class="pin-key">6</button>
+                <button onclick="pinPress('7')" class="pin-key">7</button>
+                <button onclick="pinPress('8')" class="pin-key">8</button>
+                <button onclick="pinPress('9')" class="pin-key">9</button>
+                <button onclick="pinClear()" class="pin-key text-sm">Clear</button>
+                <button onclick="pinPress('0')" class="pin-key">0</button>
+                <button onclick="hidePinModal()" class="pin-key text-sm">Cancel</button>
+            </div>
+            <div class="text-[10px] text-center text-zinc-400">Demo PIN: 1234</div>
+        </div>
+    </div>
+
+    <!-- Glovebox quick-view during call -->
+    <div id="glovebox-call-modal" class="modal-overlay">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <div class="font-semibold">Digital Glovebox</div>
+                <button onclick="hideGloveboxCallModal()" class="text-zinc-400"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div id="glovebox-call-list" class="space-y-2 text-sm"></div>
+            <button onclick="hideGloveboxCallModal()" class="w-full mt-4 py-3 bg-blue-800 text-white rounded-2xl text-sm font-semibold">Close — show officer if needed</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedCategory = null;
+        let callInterval = null;
+        let callSeconds = 0;
+        let walletBalance = 149.00;
+        let pinBuffer = '';
+        let isMuted = false;
+        let cameraOn = true;
+        const DEMO_PIN = '1234';
+        const LAWYER_HOURLY_RATE = 360;
+
+        const GLOVEBOX_ICONS = {
+            drivers_licence: 'fa-id-card',
+            photo_id: 'fa-address-card',
+            medicare: 'fa-heart-pulse',
+            insurance: 'fa-car',
+            rego: 'fa-file-lines',
+            prescription: 'fa-pills',
+            other: 'fa-file'
+        };
+
+        const DEFAULT_EMERGENCY = [
+            { name: 'Sarah Mitchell', phone: '0412 345 678' },
+            { name: 'James Mitchell', phone: '0423 456 789' }
+        ];
+
+        const DEFAULT_FAMILY = [
+            { name: 'Sarah Mitchell', email: 'sarah.m@email.com', relation: 'Partner / Spouse', status: 'active' },
+            { name: 'Tom Mitchell', email: 'tom.m@email.com', relation: 'Child (18+)', status: 'invited' }
+        ];
+
+        const categoryLabels = {
+            traffic: 'Traffic & Drug Driving specialists',
+            criminal: 'Criminal law specialists',
+            complaint: 'Police complaints specialists',
+            general: 'General police interaction',
+            cannabis: 'Medicinal cannabis & criminal law'
+        };
+
+        const categoryAdvice = {
+            traffic: '"Comply with any lawful saliva or breath test request. Do not admit to drug use. Note the time of any prescription medication. I will advise on your specific results and options."',
+            criminal: '"You have the right to remain silent except for identification when lawfully required. Do not discuss the matter with other detainees. I am your lawyer — wait for my advice before answering police questions."',
+            complaint: '"Document everything factually while fresh. Do not obstruct police. We can discuss formal complaint pathways and whether CCC or Ethical Standards is appropriate for your situation."',
+            general: '"Stay calm. Comply with lawful directions. You may decline to answer incriminating questions. Ask if you are under arrest or free to leave."',
+            cannabis: '"Queensland has zero-tolerance THC driving laws regardless of prescription. Comply with testing. Do not drive if you may test positive. I will advise on your specific circumstances."'
+        };
+
+        document.getElementById('terms-checkbox').addEventListener('change', function() {
+            document.getElementById('accept-terms-btn').disabled = !this.checked;
+        });
+
+        document.getElementById('precall-checkbox').addEventListener('change', function() {
+            document.getElementById('precall-btn').disabled = !this.checked;
+        });
+
+        function acceptTerms() {
+            localStorage.setItem('shieldau_terms_accepted', 'true');
+            document.getElementById('terms-modal').classList.remove('show');
+        }
+
+        if (localStorage.getItem('shieldau_terms_accepted') === 'true') {
+            document.getElementById('terms-modal').classList.remove('show');
+        }
+
+        function showSectionFromModal(sectionId) {
+            document.getElementById('terms-modal').classList.remove('show');
+            showSection(sectionId);
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            updateNavForSection(sectionId);
+        }
+
+        function navTo(sectionId, btn) {
+            showSection(sectionId);
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function formatMoney(amount) {
+            return '$' + amount.toFixed(2);
+        }
+
+        function updateWalletDisplays() {
+            const ids = ['header-wallet-balance', 'home-wallet-balance', 'match-wallet-balance',
+                         'wallet-balance-display', 'more-wallet-balance'];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = formatMoney(walletBalance);
+            });
+        }
+
+        function calculateCallCost(totalMinutes) {
+            const hourly = LAWYER_HOURLY_RATE;
+            const perMin = hourly / 60;
+            const firstBlock = hourly * 0.25;
+            const minutes = Math.max(totalMinutes, 0.1);
+
+            if (minutes <= 15) {
+                return { total: firstBlock, breakdown: [{ label: 'First 15 min (minimum block)', amount: firstBlock }], phase: 'First 15 min block' };
+            }
+
+            const breakdown = [{ label: 'First 15 min (minimum block)', amount: firstBlock }];
+            let total = firstBlock;
+
+            if (minutes <= 60) {
+                const extraMins = Math.ceil(minutes - 15);
+                const extraCost = extraMins * perMin;
+                breakdown.push({ label: `Minutes 16–${Math.ceil(minutes)} (${extraMins} min × ${formatMoney(perMin)})`, amount: extraCost });
+                total += extraCost;
+                return { total, breakdown, phase: `Per-minute billing (${extraMins} min after block)` };
+            }
+
+            const mins16to60 = 45;
+            const midCost = mins16to60 * perMin;
+            breakdown.push({ label: `Minutes 16–60 (45 min × ${formatMoney(perMin)})`, amount: midCost });
+            total += midCost;
+
+            const extraHours = Math.ceil((minutes - 60) / 60);
+            const hourCost = extraHours * hourly;
+            breakdown.push({ label: `After 60 min (${extraHours} hr × ${formatMoney(hourly)})`, amount: hourCost });
+            total += hourCost;
+
+            return { total, breakdown, phase: `Hourly blocks (${extraHours} hr after first hour)` };
+        }
+
+        function topUpWallet() {
+            walletBalance += 50;
+            localStorage.setItem('shieldau_wallet', walletBalance);
+            updateWalletDisplays();
+            alert('Added $50 Shield Credit (demo).');
+        }
+
+        function showRightsState(state) {
+            ['qld', 'nsw', 'vic'].forEach(s => {
+                document.getElementById('rights-content-' + s).classList.toggle('hidden', s !== state);
+                const tab = document.getElementById('rights-tab-' + s);
+                if (s === state) {
+                    tab.className = 'rights-tab flex-1 py-2 rounded-xl text-xs font-semibold bg-blue-800 text-white';
+                } else {
+                    tab.className = 'rights-tab flex-1 py-2 rounded-xl text-xs font-semibold bg-zinc-100 text-zinc-600';
+                }
+            });
+        }
+
+        function updateNavForSection(sectionId) {
+            const map = {
+                'home-section': 0, 'rights-section': 1, 'aboriginal-section': 1,
+                'document-section': 2, 'glovebox-section': 2,
+                'more-section': 3, 'wallet-section': 3, 'emergency-section': 3,
+                'family-section': 3, 'terms-section': 3, 'privacy-section': 3
+            };
+            const idx = map[sectionId];
+            if (idx !== undefined) {
+                document.querySelectorAll('.nav-btn').forEach((b, i) => {
+                    b.classList.toggle('active', i === idx);
+                });
+            }
+        }
+
+        function selectCategory(el, cat) {
+            document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedCategory = cat;
+            document.getElementById('match-btn').disabled = false;
+        }
+
+        function selectCategoryQuick(cat) {
+            selectedCategory = cat;
+            showSection('precall-section');
+        }
+
+        function startMatching() {
+            showSection('precall-section');
+        }
+
+        function startPoliceFlow() {
+            showSection('connect-section');
+            const status = document.getElementById('matching-status');
+            const detail = document.getElementById('matching-detail');
+            const progress = document.getElementById('progress-bar');
+            const lawyerFound = document.getElementById('lawyer-found');
+
+            lawyerFound.classList.add('hidden');
+            status.textContent = 'Searching partner panel...';
+            detail.textContent = categoryLabels[selectedCategory] || 'Queensland specialists';
+            progress.style.width = '0%';
+
+            setTimeout(() => { progress.style.width = '30%'; status.textContent = 'Checking availability...'; }, 600);
+            setTimeout(() => { progress.style.width = '65%'; status.textContent = 'Matching specialist...'; }, 1400);
+            setTimeout(() => {
+                progress.style.width = '100%';
+                status.textContent = 'Lawyer available';
+                lawyerFound.classList.remove('hidden');
+            }, 2200);
+        }
+
+        function simulateCall() {
+            showSection('call-section');
+            document.getElementById('call-advice').textContent = categoryAdvice[selectedCategory] || categoryAdvice.general;
+            callSeconds = 0;
+            updateCallTimer();
+            if (callInterval) clearInterval(callInterval);
+            callInterval = setInterval(() => {
+                callSeconds++;
+                updateCallTimer();
+            }, 1000);
+
+            const alertOn = document.getElementById('emergency-alert-checkbox')?.checked
+                && document.getElementById('emergency-master-toggle')?.checked;
+            if (alertOn) sendEmergencyAlert('Lawyer video session started');
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const btn = document.getElementById('mute-btn');
+            btn.innerHTML = isMuted
+                ? '<i class="fa-solid fa-microphone-slash text-sm text-red-600"></i> Unmute'
+                : '<i class="fa-solid fa-microphone text-sm"></i> Mute';
+            btn.classList.toggle('bg-red-50', isMuted);
+        }
+
+        function toggleCamera() {
+            cameraOn = !cameraOn;
+            const btn = document.getElementById('camera-btn');
+            btn.innerHTML = cameraOn
+                ? '<i class="fa-solid fa-video text-sm"></i> Cam'
+                : '<i class="fa-solid fa-video-slash text-sm text-red-600"></i> Off';
+            btn.classList.toggle('bg-red-50', !cameraOn);
+        }
+
+        function showPinModal() {
+            pinBuffer = '';
+            updatePinDisplay();
+            document.getElementById('pin-modal').classList.add('show');
+        }
+
+        function hidePinModal() {
+            pinBuffer = '';
+            updatePinDisplay();
+            document.getElementById('pin-modal').classList.remove('show');
+        }
+
+        function updatePinDisplay() {
+            document.querySelectorAll('.pin-dot').forEach((dot, i) => {
+                dot.classList.toggle('bg-blue-800', i < pinBuffer.length);
+                dot.classList.toggle('bg-zinc-200', i >= pinBuffer.length);
+            });
+        }
+
+        function pinPress(digit) {
+            if (pinBuffer.length >= 4) return;
+            pinBuffer += digit;
+            updatePinDisplay();
+            if (pinBuffer.length === 4) {
+                setTimeout(() => {
+                    if (pinBuffer === DEMO_PIN) {
+                        hidePinModal();
+                        endCall();
+                    } else {
+                        alert('Incorrect PIN (demo: 1234)');
+                        pinBuffer = '';
+                        updatePinDisplay();
+                    }
+                }, 200);
+            }
+        }
+
+        function pinClear() {
+            pinBuffer = '';
+            updatePinDisplay();
+        }
+
+        function getGloveboxDocs() {
+            try {
+                return JSON.parse(localStorage.getItem('shieldau_glovebox') || '[]');
+            } catch { return []; }
+        }
+
+        function saveGloveboxDocs(docs) {
+            localStorage.setItem('shieldau_glovebox', JSON.stringify(docs));
+            renderGlovebox();
+            updateCounts();
+        }
+
+        function renderGlovebox() {
+            const docs = getGloveboxDocs();
+            const container = document.getElementById('glovebox-items');
+            if (!container) return;
+
+            if (!docs.length) {
+                container.innerHTML = '<div class="text-center py-8 text-xs text-zinc-400 border border-dashed rounded-2xl">No documents yet. Add your licence or ID for quick access.</div>';
+                return;
+            }
+
+            container.innerHTML = docs.map((d, i) => `
+                <div class="glovebox-card border rounded-2xl p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-700">
+                        <i class="fa-solid ${GLOVEBOX_ICONS[d.type] || 'fa-file'}"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-sm truncate">${d.label}</div>
+                        <div class="text-[10px] text-zinc-500">${d.type.replace(/_/g, ' ')} • Encrypted (demo)</div>
+                    </div>
+                    <button onclick="removeGloveboxDoc(${i})" class="text-zinc-300 hover:text-red-500"><i class="fa-solid fa-trash text-sm"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function addGloveboxDoc() {
+            const type = document.getElementById('glovebox-type').value;
+            const label = document.getElementById('glovebox-label').value.trim();
+            const file = document.getElementById('glovebox-file').files[0];
+            const consent = document.getElementById('glovebox-consent').checked;
+
+            if (!label) { alert('Please add a label.'); return; }
+            if (!consent) { alert('Please consent to encrypted storage.'); return; }
+
+            const docs = getGloveboxDocs();
+            docs.push({
+                type, label,
+                fileName: file ? file.name : 'manual_entry.pdf',
+                addedAt: new Date().toISOString()
+            });
+            saveGloveboxDocs(docs);
+            document.getElementById('glovebox-label').value = '';
+            document.getElementById('glovebox-file').value = '';
+            document.getElementById('glovebox-consent').checked = false;
+            alert('Document saved to encrypted Glovebox (demo).');
+        }
+
+        function removeGloveboxDoc(index) {
+            const docs = getGloveboxDocs();
+            docs.splice(index, 1);
+            saveGloveboxDocs(docs);
+        }
+
+        function showGloveboxInCall() {
+            const docs = getGloveboxDocs();
+            const list = document.getElementById('glovebox-call-list');
+            if (!docs.length) {
+                list.innerHTML = '<p class="text-xs text-zinc-500">No documents in Glovebox. Add your licence in settings.</p>';
+            } else {
+                list.innerHTML = docs.map(d => `
+                    <div class="flex items-center gap-3 p-3 bg-zinc-50 rounded-xl">
+                        <i class="fa-solid ${GLOVEBOX_ICONS[d.type] || 'fa-file'} text-blue-700"></i>
+                        <div><div class="font-medium text-sm">${d.label}</div><div class="text-[10px] text-zinc-500">Tap to show officer (demo)</div></div>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('glovebox-call-modal').classList.add('show');
+        }
+
+        function hideGloveboxCallModal() {
+            document.getElementById('glovebox-call-modal').classList.remove('show');
+        }
+
+        function getEmergencyContacts() {
+            try {
+                const saved = localStorage.getItem('shieldau_emergency');
+                if (saved) return JSON.parse(saved);
+            } catch {}
+            localStorage.setItem('shieldau_emergency', JSON.stringify(DEFAULT_EMERGENCY));
+            return DEFAULT_EMERGENCY;
+        }
+
+        function saveEmergencyContacts(contacts) {
+            localStorage.setItem('shieldau_emergency', JSON.stringify(contacts));
+            renderEmergencyContacts();
+            updateCounts();
+        }
+
+        function renderEmergencyContacts() {
+            const contacts = getEmergencyContacts();
+            const list = document.getElementById('emergency-contacts-list');
+            if (!list) return;
+
+            list.innerHTML = contacts.map((c, i) => `
+                <div class="border rounded-2xl p-4 flex items-center justify-between">
+                    <div>
+                        <div class="font-semibold text-sm">${c.name}</div>
+                        <div class="text-xs text-zinc-500">${c.phone}</div>
+                    </div>
+                    <button onclick="removeEmergencyContact(${i})" class="text-zinc-300 hover:text-red-500"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function addEmergencyContact() {
+            const name = document.getElementById('emergency-name').value.trim();
+            const phone = document.getElementById('emergency-phone').value.trim();
+            if (!name || !phone) { alert('Name and phone required.'); return; }
+            const contacts = getEmergencyContacts();
+            contacts.push({ name, phone });
+            saveEmergencyContacts(contacts);
+            document.getElementById('emergency-name').value = '';
+            document.getElementById('emergency-phone').value = '';
+        }
+
+        function removeEmergencyContact(index) {
+            const contacts = getEmergencyContacts();
+            contacts.splice(index, 1);
+            saveEmergencyContacts(contacts);
+        }
+
+        function saveEmergencySettings() {
+            localStorage.setItem('shieldau_emergency_enabled', document.getElementById('emergency-master-toggle').checked);
+        }
+
+        function getDemoLocation() {
+            return { lat: -27.9178, lng: 153.4031, address: 'Gold Coast Hwy, Biggera Waters QLD 4216' };
+        }
+
+        function sendEmergencyAlert(reason) {
+            const contacts = getEmergencyContacts();
+            const loc = getDemoLocation();
+            const time = new Date().toLocaleString('en-AU');
+            const msg = `ShieldAU Alert: Lewis requested lawyer support. ${reason}. Location: ${loc.address} (${loc.lat}, ${loc.lng}). Time: ${time}. This is an automated alert — not legal advice.`;
+
+            const log = document.getElementById('emergency-log');
+            const banner = document.getElementById('emergency-banner');
+            const bannerText = document.getElementById('emergency-banner-text');
+
+            contacts.forEach(c => {
+                const entry = { to: c.name, phone: c.phone, message: msg, sentAt: new Date().toISOString() };
+                const logs = JSON.parse(localStorage.getItem('shieldau_emergency_log') || '[]');
+                logs.unshift(entry);
+                localStorage.setItem('shieldau_emergency_log', JSON.stringify(logs.slice(0, 10)));
+            });
+
+            if (log) renderEmergencyLog();
+            if (banner && bannerText) {
+                bannerText.textContent = `SMS sent to ${contacts.length} contact(s) with live location (demo)`;
+                banner.classList.remove('hidden');
+            }
+        }
+
+        function testEmergencyAlert() {
+            if (!document.getElementById('emergency-master-toggle').checked) {
+                alert('Enable emergency alerts first.');
+                return;
+            }
+            sendEmergencyAlert('TEST — no lawyer session active');
+            alert('Test SMS alerts sent to all emergency contacts (demo).');
+        }
+
+        function renderEmergencyLog() {
+            const log = document.getElementById('emergency-log');
+            if (!log) return;
+            const logs = JSON.parse(localStorage.getItem('shieldau_emergency_log') || '[]');
+            if (!logs.length) {
+                log.innerHTML = '';
+                return;
+            }
+            log.innerHTML = '<div class="text-xs font-semibold text-zinc-600 mb-2">Recent alerts (demo)</div>' +
+                logs.slice(0, 3).map(l => `
+                    <div class="text-[10px] bg-zinc-50 border rounded-xl p-3">
+                        <div class="font-medium">${l.to} • ${l.phone}</div>
+                        <div class="text-zinc-500 mt-1 truncate">${l.message}</div>
+                    </div>
+                `).join('');
+        }
+
+        function getFamilyMembers() {
+            try {
+                const saved = localStorage.getItem('shieldau_family');
+                if (saved) return JSON.parse(saved);
+            } catch {}
+            localStorage.setItem('shieldau_family', JSON.stringify(DEFAULT_FAMILY));
+            return DEFAULT_FAMILY;
+        }
+
+        function saveFamilyMembers(members) {
+            localStorage.setItem('shieldau_family', JSON.stringify(members));
+            renderFamilyMembers();
+            updateCounts();
+        }
+
+        function renderFamilyMembers() {
+            const members = getFamilyMembers();
+            const list = document.getElementById('family-members-list');
+            if (!list) return;
+
+            list.innerHTML = members.map((m, i) => `
+                <div class="border rounded-2xl p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-800 font-semibold text-sm">
+                        ${m.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-sm">${m.name}</div>
+                        <div class="text-xs text-zinc-500">${m.email} • ${m.relation}</div>
+                    </div>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full ${m.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${m.status}</span>
+                    ${i > 0 ? `<button onclick="removeFamilyMember(${i})" class="text-zinc-300 hover:text-red-500 ml-1"><i class="fa-solid fa-trash text-sm"></i></button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function addFamilyMember() {
+            const name = document.getElementById('family-name').value.trim();
+            const email = document.getElementById('family-email').value.trim();
+            const relation = document.getElementById('family-relation').value;
+            if (!name || !email) { alert('Name and email required.'); return; }
+
+            const members = getFamilyMembers();
+            if (members.length >= 5) { alert('Family plan supports up to 5 members.'); return; }
+
+            members.push({ name, email, relation, status: 'invited' });
+            saveFamilyMembers(members);
+            document.getElementById('family-name').value = '';
+            document.getElementById('family-email').value = '';
+            alert(`Invite sent to ${email} (demo). They can register with this email.`);
+        }
+
+        function removeFamilyMember(index) {
+            const members = getFamilyMembers();
+            members.splice(index, 1);
+            saveFamilyMembers(members);
+        }
+
+        function updateCounts() {
+            const docs = getGloveboxDocs().length;
+            const contacts = getEmergencyContacts().length;
+            const family = getFamilyMembers().length;
+
+            const gc = document.getElementById('more-glovebox-count');
+            const ec = document.getElementById('more-emergency-count');
+            const fc = document.getElementById('home-family-count');
+
+            if (gc) gc.textContent = docs + ' doc' + (docs !== 1 ? 's' : '');
+            if (ec) ec.textContent = contacts + ' contact' + (contacts !== 1 ? 's' : '');
+            if (fc) fc.textContent = family + ' member' + (family !== 1 ? 's' : '');
+        }
+
+        function updateCallTimer() {
+            const m = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+            const s = String(callSeconds % 60).padStart(2, '0');
+            document.getElementById('call-timer').textContent = `${m}:${s}`;
+
+            const minutes = callSeconds / 60;
+            const { total, phase } = calculateCallCost(minutes);
+            document.getElementById('call-running-cost').textContent = formatMoney(total);
+            document.getElementById('call-billing-phase').textContent = phase;
+        }
+
+        function endCall() {
+            clearInterval(callInterval);
+            const minutes = callSeconds / 60;
+            const mins = Math.floor(callSeconds / 60);
+            const secs = callSeconds % 60;
+            const { total, breakdown } = calculateCallCost(minutes);
+
+            document.getElementById('postcall-duration').textContent =
+                mins > 0 ? `${mins} min ${secs} sec` : `${secs} sec`;
+
+            document.getElementById('postcall-billing-breakdown').innerHTML =
+                breakdown.map(b =>
+                    `<div class="flex justify-between"><span>${b.label}</span><span>${formatMoney(b.amount)}</span></div>`
+                ).join('');
+
+            document.getElementById('postcall-total').textContent = formatMoney(total);
+            walletBalance = Math.max(0, walletBalance - total);
+            localStorage.setItem('shieldau_wallet', walletBalance);
+            updateWalletDisplays();
+            document.getElementById('postcall-remaining').textContent = formatMoney(walletBalance);
+            showSection('postcall-section');
+        }
+
+        function shareNotesWithLawyer() {
+            const saved = localStorage.getItem('shieldau_demo_notes');
+            if (saved) {
+                alert('Incident notes shared with Dr. Priya Sharma (demo). In production this requires explicit consent and encrypted transfer.');
+            } else {
+                alert('No saved notes yet. Document your incident first, then share during the call.');
+            }
+        }
+
+        function saveNotes() {
+            const notes = document.getElementById('incident-notes').value;
+            const consent = document.getElementById('consent-checkbox').checked;
+
+            if (!notes.trim()) { alert('Please add factual notes about what happened.'); return; }
+            if (!consent) { alert('Please consent to secure storage before saving.'); return; }
+
+            const data = {
+                time: document.getElementById('incident-time').value,
+                location: document.getElementById('incident-location').value,
+                officer: document.getElementById('incident-officer').value,
+                witnesses: document.getElementById('incident-witnesses').value,
+                notes: notes,
+                savedAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('shieldau_demo_notes', JSON.stringify(data));
+            alert('Notes saved securely (demo). Encrypted Australia-hosted storage in production.');
+            showSection('home-section');
+        }
+
+        // Init wallet & billing displays
+        const savedWallet = localStorage.getItem('shieldau_wallet');
+        if (savedWallet) walletBalance = parseFloat(savedWallet);
+        updateWalletDisplays();
+        document.getElementById('home-first-block').textContent = formatMoney(LAWYER_HOURLY_RATE * 0.25);
+        document.getElementById('match-hourly-rate').textContent = formatMoney(LAWYER_HOURLY_RATE) + '/hr';
+        document.getElementById('match-first-block').textContent = formatMoney(LAWYER_HOURLY_RATE * 0.25);
+        document.getElementById('match-per-min').textContent = formatMoney(LAWYER_HOURLY_RATE / 60) + '/min';
+        document.getElementById('match-hourly-block').textContent = formatMoney(LAWYER_HOURLY_RATE) + '/hr blocks';
+
+        const emergencyEnabled = localStorage.getItem('shieldau_emergency_enabled');
+        if (emergencyEnabled !== null) {
+            document.getElementById('emergency-master-toggle').checked = emergencyEnabled === 'true';
+        }
+
+        if (!localStorage.getItem('shieldau_glovebox')) {
+            localStorage.setItem('shieldau_glovebox', JSON.stringify([
+                { type: 'drivers_licence', label: 'QLD Driver Licence', fileName: 'licence.jpg', addedAt: new Date().toISOString() },
+                { type: 'insurance', label: 'NRMA Comprehensive', fileName: 'insurance.pdf', addedAt: new Date().toISOString() }
+            ]));
+        }
+
+        renderGlovebox();
+        renderEmergencyContacts();
+        renderEmergencyLog();
+        renderFamilyMembers();
+        updateCounts();
+
+        // Live clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('status-time').textContent =
+                now.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+        updateClock();
+        setInterval(updateClock, 30000);
+
+        document.addEventListener('keydown', e => {
+            if (e.key === '?' && document.getElementById('home-section').classList.contains('active')) {
+                e.preventDefault();
+                showSection('category-section');
+            }
+        });
+    </script>
+</body>
+</html>
