@@ -8,12 +8,8 @@
   "enableSiteSettingsShortcut": true,
   "fallbackType": "customtabs",
   "features": {
-    "locationDelegation": {
-      "enabled": true
-    },
-    "playBilling": {
-      "enabled": false
-    }
+    "locationDelegation": { "enabled": true },
+    "playBilling": { "enabled": false }
   },
   "host": "https://leaflock420-weedman.github.io",
   "iconUrl": "https://leaflock420-weedman.github.io/shieldau/icons/icon-512.png",
@@ -38,17 +34,27 @@
       "url": "/shieldau/index.html",
       "icons": [
         {
-          "sizes": "192x192",
-          "src": "https://leaflock420-weedman.github.io/shieldau/icons/icon-192.png"
+          "sizes": "96x96",
+          "src": "https://leaflock420-weedman.github.io/shieldau/icons/icon-96.png"
         }
       ]
     }
   ],
-  "signing": null,
-  "signingMode": "none",
+  "signing": {
+    "file": null,
+    "alias": "shieldau",
+    "fullName": "ShieldAU Demo",
+    "organization": "ShieldAU",
+    "organizationalUnit": "Engineering",
+    "countryCode": "AU",
+    "keyPassword": "shieldau123",
+    "storePassword": "shieldau123"
+  },
+  "signingMode": "new",
   "splashScreenFadeOutDuration": 300,
   "startUrl": "/shieldau/index.html",
   "themeColor": "#1e3a8a",
   "themeColorDark": "#111827",
-  "webManifestUrl": "https://leaflock420-weedman.github.io/shieldau/manifest.json"
+  "webManifestUrl": "https://leaflock420-weedman.github.io/shieldau/manifest.json",
+  "pwaUrl": "https://leaflock420-weedman.github.io/shieldau/index.html"
 }
