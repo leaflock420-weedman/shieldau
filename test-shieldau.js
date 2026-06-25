@@ -28,60 +28,48 @@ function formatMoney(amount) {
 function calculateCallCost(totalMinutes) {
   const hourly = LAWYER_HOURLY_RATE;
   const perMin = hourly / 60;
-  const firstBlock = hourly * 0.25;
   const minutes = Math.max(totalMinutes, 0.1);
+  const freeBlock = { label: 'First 15 min (included in Shield Basic)', amount: 0 };
 
   if (minutes <= 15) {
-    return { total: firstBlock, breakdown: [{ label: 'First 15 min (minimum block)', amount: firstBlock }], phase: 'First 15 min block' };
+    return { total: 0, breakdown: [freeBlock], phase: 'Included in subscription' };
   }
 
-  const breakdown = [{ label: 'First 15 min (minimum block)', amount: firstBlock }];
-  let total = firstBlock;
-
-  if (minutes <= 60) {
-    const extraMins = Math.ceil(minutes - 15);
-    const extraCost = extraMins * perMin;
-    breakdown.push({ label: `Minutes 16–${Math.ceil(minutes)} (${extraMins} min × ${formatMoney(perMin)})`, amount: extraCost });
-    total += extraCost;
-    return { total, breakdown, phase: `Per-minute billing (${extraMins} min after block)` };
-  }
-
-  const mins16to60 = 45;
-  const midCost = mins16to60 * perMin;
-  breakdown.push({ label: `Minutes 16–60 (45 min × ${formatMoney(perMin)})`, amount: midCost });
-  total += midCost;
-
-  const extraHours = Math.ceil((minutes - 60) / 60);
-  const hourCost = extraHours * hourly;
-  breakdown.push({ label: `After 60 min (${extraHours} hr × ${formatMoney(hourly)})`, amount: hourCost });
-  total += hourCost;
-
-  return { total, breakdown, phase: `Hourly blocks (${extraHours} hr after first hour)` };
+  const extraMins = Math.ceil(minutes - 15);
+  const extraCost = extraMins * perMin;
+  return {
+    total: extraCost,
+    breakdown: [
+      freeBlock,
+      { label: `Minutes 16–${Math.ceil(minutes)} (${extraMins} min × ${formatMoney(perMin)})`, amount: extraCost }
+    ],
+    phase: `Per-minute billing (${extraMins} min after free block)`
+  };
 }
 
 console.log('\n🛡️  ShieldAU Demo Tests\n');
 
 // ── Billing model ──────────────────────────────────────────────────────────
-console.log('Billing (15-min block → per-min → hourly):');
+console.log('Billing (15 min free → per-min overage):');
 
 const t4 = calculateCallCost(4 / 60);
-assert(t4.total === 90, `4 min call = $90 (first block only) → got ${formatMoney(t4.total)}`);
+assert(t4.total === 0, `4 min call = $0 (included in Basic) → got ${formatMoney(t4.total)}`);
 
 const t25 = calculateCallCost(25);
-assert(t25.total === 150, `25 min call = $150 → got ${formatMoney(t25.total)}`);
+assert(t25.total === 60, `25 min call = $60 → got ${formatMoney(t25.total)}`);
 
 const t60 = calculateCallCost(60);
-assert(t60.total === 360, `60 min call = $360 (full hour) → got ${formatMoney(t60.total)}`);
+assert(t60.total === 270, `60 min call = $270 → got ${formatMoney(t60.total)}`);
 
 const t75 = calculateCallCost(75);
-assert(t75.total === 720, `75 min call = $720 → got ${formatMoney(t75.total)}`);
+assert(t75.total === 360, `75 min call = $360 → got ${formatMoney(t75.total)}`);
 
 // ── Wallet deduction ───────────────────────────────────────────────────────
 console.log('\nWallet deduction:');
 let wallet = 149;
 const cost = calculateCallCost(4 / 60).total;
 wallet = Math.max(0, wallet - cost);
-assert(wallet === 59, `$149 − $90 short call = $59 remaining → got ${formatMoney(wallet)}`);
+assert(wallet === 149, `$149 − $0 short call = $149 remaining → got ${formatMoney(wallet)}`);
 
 // ── PIN security ───────────────────────────────────────────────────────────
 console.log('\nPIN to end session:');
@@ -143,6 +131,8 @@ const required = [
   'function showPinModal',
   'function sendAskLawyer',
   'function sendCopilot',
+  'Shield Basic',
+  '15 min FREE',
 ];
 required.forEach(id => assert(html.includes(id), `Contains: ${id}`));
 
@@ -160,7 +150,7 @@ if (failed === 0) {
   console.log('     → Red banner: "SMS sent to 2 contacts"');
   console.log('     → Video UI with lawyer + PiP');
   console.log('  4. Tap ID → see QLD Licence + NRMA Insurance');
-  console.log('  5. End Session → PIN: 1-2-3-4 → post-call bill ~$90');
+  console.log('  5. End Session → PIN: 1-2-3-4 → post-call bill ~$0 (first 15 min free)');
   console.log('  6. More → Family Plan → see Sarah + Tom sub-accounts\n');
   process.exit(0);
 } else {

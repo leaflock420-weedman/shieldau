@@ -39,7 +39,7 @@ Australian lawyer-connection platform demo — inspired by Attorney Shield, buil
 - **Supplemental plans** — gig driver, firearms, home business (LegalShield)
 - **Refer & Earn** — membership referrals
 - **Ask upgrades** — fast track, second opinion, phone consult, attachments (JustAnswer)
-- Shield Credit billing (15-min block → per-min → hourly)
+- Shield Basic billing ($15/mo — first 15 min FREE, then per-min overage from Shield Credit)
 - Digital Glovebox, emergency SMS alerts, family plan
 - Know Your Rights (QLD, NSW, VIC), ATSILS links, medicinal cannabis module
 
