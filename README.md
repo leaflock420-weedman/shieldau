@@ -2,7 +2,9 @@
 
 Australian lawyer-connection platform demo — inspired by Attorney Shield, built for QLD/NSW/VIC compliance.
 
-**Live demo:** Deploy via Render or GitHub Pages (see below).
+**Live demo:** https://leaflock420-weedman.github.io/shieldau/
+
+**GitHub:** https://github.com/leaflock420-weedman/shieldau
 
 ## Features
 
