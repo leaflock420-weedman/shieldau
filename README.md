@@ -6,7 +6,7 @@ Australian lawyer-connection platform demo — inspired by Attorney Shield, buil
 
 | Platform | URL |
 |----------|-----|
-| **Web app** | https://leaflock420-weedman.github.io/shieldau/ |
+| **Web app (Ultimate v2.0)** | https://leaflock420-weedman.github.io/shieldau/ |
 | **Install APK** | https://leaflock420-weedman.github.io/shieldau/install.html |
 | **GitHub** | https://github.com/leaflock420-weedman/shieldau |
 

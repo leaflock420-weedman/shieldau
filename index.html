@@ -159,6 +159,43 @@
         .chat-bubble-expert { background: #f4f4f5; color: #18181b; border-radius: 1rem 1rem 1rem 0.25rem; }
         .plan-check { color: #059669; }
         .plan-dash { color: #d4d4d8; }
+
+        .sos-fab {
+            position: fixed;
+            bottom: 28px;
+            right: max(16px, calc(50% - 190px));
+            z-index: 60;
+            width: 56px;
+            height: 56px;
+            border-radius: 9999px;
+            background: linear-gradient(#dc2626, #991b1b);
+            color: white;
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            border: 3px solid white;
+        }
+        .sos-fab:active { transform: scale(0.94); }
+
+        .health-ring {
+            background: conic-gradient(#059669 0% 72%, #e4e4e7 72% 100%);
+            border-radius: 9999px;
+            padding: 4px;
+        }
+        .health-ring-inner {
+            background: white;
+            border-radius: 9999px;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #047857;
+        }
     </style>
 </head>
 <body class="bg-zinc-950 py-8">
@@ -216,7 +253,7 @@
             </div>
             <div class="px-3 py-1 bg-zinc-900 rounded-full text-xs text-zinc-400 flex items-center gap-x-1.5">
                 <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                <span>Demo v1.3</span>
+                <span>Ultimate v2.0</span>
             </div>
         </div>
 
@@ -250,11 +287,22 @@
                         </div>
                     </div>
                 </div>
-                <button onclick="showSection('wallet-section')" class="mt-3 w-full bg-white/10 hover:bg-white/15 rounded-2xl px-4 py-2.5 flex items-center justify-between transition-colors">
+                <div class="mt-3 flex gap-2">
+                    <div class="flex-1 relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-white/50 text-xs"></i>
+                        <input type="search" id="global-search" placeholder="Search all legal services..." class="w-full bg-white/10 border border-white/20 rounded-xl pl-8 pr-3 py-2 text-sm text-white placeholder-white/50" oninput="globalSearch(this.value)" onfocus="showSection('search-section')">
+                    </div>
+                    <button onclick="showSection('notifications-section')" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center relative">
+                        <i class="fa-solid fa-bell"></i>
+                        <span id="notif-badge" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] font-bold flex items-center justify-center">3</span>
+                    </button>
+                </div>
+                <button onclick="showSection('wallet-section')" class="mt-2 w-full bg-white/10 hover:bg-white/15 rounded-2xl px-4 py-2.5 flex items-center justify-between transition-colors">
                     <div class="flex items-center gap-2 text-sm">
                         <i class="fa-solid fa-wallet"></i>
                         <span class="opacity-90">Shield Credit</span>
                         <span class="text-[10px] bg-emerald-500/30 text-emerald-200 px-2 py-0.5 rounded-full">Shield Plus</span>
+                        <span class="text-[10px] bg-violet-500/30 text-violet-200 px-2 py-0.5 rounded-full"><i class="fa-solid fa-shield-check mr-0.5"></i>Satisfaction Guarantee</span>
                     </div>
                     <div class="font-semibold" id="header-wallet-balance">$149.00</div>
                 </button>
@@ -264,6 +312,28 @@
 
                 <!-- HOME -->
                 <div id="home-section" class="section active">
+                    <div class="bg-white border border-zinc-200 rounded-3xl p-4 mb-4 flex items-center gap-4">
+                        <div class="health-ring shrink-0"><div class="health-ring-inner" id="health-score">72%</div></div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-semibold text-sm">Legal Health Score</div>
+                            <div class="text-[10px] text-zinc-500">Rocket Lawyer checkup + your setup progress</div>
+                            <button onclick="runLegalCheckup()" class="text-[10px] text-blue-700 font-medium mt-1">Improve score →</button>
+                        </div>
+                        <button onclick="showSection('dashboard-section')" class="text-xs text-blue-700 font-semibold shrink-0">Dashboard</button>
+                    </div>
+
+                    <div class="bg-zinc-50 border border-zinc-200 rounded-2xl p-3 mb-4" id="setup-checklist">
+                        <div class="text-xs font-semibold text-zinc-700 mb-2">Setup checklist <span id="setup-progress" class="text-emerald-600">3/6</span></div>
+                        <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+                            <button onclick="showSection('emergency-section')" class="text-left px-2 py-1 rounded-lg bg-emerald-100 text-emerald-800"><i class="fa-solid fa-check mr-1"></i>Emergency contacts</button>
+                            <button onclick="showSection('glovebox-section')" class="text-left px-2 py-1 rounded-lg bg-emerald-100 text-emerald-800"><i class="fa-solid fa-check mr-1"></i>Glovebox ID</button>
+                            <button onclick="showSection('wallet-section')" class="text-left px-2 py-1 rounded-lg bg-emerald-100 text-emerald-800"><i class="fa-solid fa-check mr-1"></i>Shield Plus active</button>
+                            <button onclick="showSection('calendar-section')" class="text-left px-2 py-1 rounded-lg bg-amber-100 text-amber-800"><i class="fa-regular fa-circle mr-1"></i>Add court dates</button>
+                            <button onclick="showSection('estate-section')" class="text-left px-2 py-1 rounded-lg bg-amber-100 text-amber-800"><i class="fa-regular fa-circle mr-1"></i>Estate planning</button>
+                            <button onclick="showSection('vault-section')" class="text-left px-2 py-1 rounded-lg bg-amber-100 text-amber-800"><i class="fa-regular fa-circle mr-1"></i>Legal Vault</button>
+                        </div>
+                    </div>
+
                     <div class="mb-5">
                         <div class="bg-red-50 border border-red-200 rounded-3xl p-5">
                             <div class="flex items-start gap-x-4">
@@ -389,7 +459,13 @@
                                 <div class="text-xs text-amber-800">Free 24/7 culturally safe help — ATSILS, ALS, VALS</div>
                             </div>
                         </button>
+                        <button onclick="showSection('services-hub-section')" class="col-span-2 bg-blue-900 text-white p-4 rounded-3xl text-left flex items-center justify-between">
+                            <div><div class="font-semibold text-sm">All Legal Services</div><div class="text-xs opacity-80">24 tools — Rocket Lawyer, LegalZoom, LegalShield, JustAnswer + ShieldAU</div></div>
+                            <i class="fa-solid fa-grid-2 text-xl opacity-80"></i>
+                        </button>
                     </div>
+
+                    <div id="home-activity" class="bg-white border border-zinc-200 rounded-2xl p-3 mb-4 text-xs hidden"></div>
 
                     <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 mb-4">
                         <div class="flex items-center justify-between mb-2">
@@ -642,7 +718,9 @@
                         </div>
                     </div>
 
-                    <button onclick="showSection('document-section')" class="w-full py-3 bg-blue-100 text-blue-800 rounded-2xl text-sm font-semibold mb-2">Update incident notes</button>
+                    <button onclick="downloadCallReceipt()" class="w-full py-3 bg-emerald-600 text-white rounded-2xl text-sm font-semibold mb-2"><i class="fa-solid fa-file-pdf mr-2"></i>Download call receipt (PDF)</button>
+                    <button onclick="showSection('matters-section')" class="w-full py-3 bg-blue-100 text-blue-800 rounded-2xl text-sm font-semibold mb-2">Add to My Matters</button>
+                    <button onclick="showSection('document-section')" class="w-full py-3 border border-blue-200 text-blue-800 rounded-2xl text-sm font-semibold mb-2">Update incident notes</button>
                     <button onclick="showSection('home-section')" class="w-full py-3 bg-zinc-100 rounded-2xl text-sm font-semibold">Back to home</button>
                 </div>
 
@@ -1442,6 +1520,153 @@
                     </div>
                 </div>
 
+                <!-- DASHBOARD -->
+                <div id="dashboard-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-4">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Your Dashboard</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mb-4 text-center text-xs">
+                        <div class="border rounded-2xl p-3"><div class="text-lg font-semibold text-emerald-700" id="dash-credit">$149</div><div class="text-zinc-500">Shield Credit</div></div>
+                        <div class="border rounded-2xl p-3"><div class="text-lg font-semibold text-violet-700" id="dash-asks">3</div><div class="text-zinc-500">Ask credits</div></div>
+                        <div class="border rounded-2xl p-3"><div class="text-lg font-semibold text-blue-700" id="dash-matters">1</div><div class="text-zinc-500">Open matters</div></div>
+                        <div class="border rounded-2xl p-3"><div class="text-lg font-semibold text-amber-700" id="dash-deadlines">2</div><div class="text-zinc-500">Deadlines</div></div>
+                    </div>
+                    <div class="font-semibold text-sm mb-2">Recent activity</div>
+                    <div id="dashboard-activity" class="space-y-2 text-xs mb-4"></div>
+                    <div class="font-semibold text-sm mb-2">Upcoming</div>
+                    <div id="dashboard-upcoming" class="space-y-2 text-xs"></div>
+                </div>
+
+                <!-- GLOBAL SEARCH -->
+                <div id="search-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Search</div>
+                    </div>
+                    <input type="search" id="search-page-input" placeholder="Search services, guides, templates..." class="w-full border rounded-xl px-3 py-2.5 text-sm mb-3" oninput="globalSearch(this.value)">
+                    <div id="search-results" class="space-y-2 text-sm"></div>
+                </div>
+
+                <!-- NOTIFICATIONS -->
+                <div id="notifications-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Notifications</div>
+                    </div>
+                    <div id="notifications-list" class="space-y-2 text-xs"></div>
+                </div>
+
+                <!-- ALL SERVICES HUB -->
+                <div id="services-hub-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">All Services</div>
+                    </div>
+                    <div id="services-hub-list" class="space-y-4 text-sm"></div>
+                </div>
+
+                <!-- MATTERS / CASES -->
+                <div id="matters-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('dashboard-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">My Matters</div>
+                    </div>
+                    <div id="matters-list" class="space-y-2 mb-4"></div>
+                    <div class="border rounded-2xl p-4 space-y-2 text-sm">
+                        <input type="text" id="matter-title" placeholder="Matter name e.g. Traffic charge June 2026" class="w-full border rounded-xl px-3 py-2">
+                        <select id="matter-type" class="w-full border rounded-xl px-3 py-2 text-sm">
+                            <option>Criminal</option><option>Traffic</option><option>Family</option><option>Civil</option><option>Business</option>
+                        </select>
+                        <button onclick="addMatter()" class="w-full py-2.5 bg-blue-800 text-white rounded-xl font-semibold">Add matter</button>
+                    </div>
+                </div>
+
+                <!-- DIVORCE & FAMILY (LegalZoom) -->
+                <div id="divorce-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('services-hub-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Divorce &amp; Family Law</div>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <button onclick="openTemplate('separation')" class="w-full border rounded-2xl p-4 text-left"><div class="font-semibold">Separation Agreement</div><div class="text-xs text-zinc-500">Property, parenting — lawyer review essential</div></button>
+                        <button onclick="alert('Consent orders / parenting plan wizard (demo). Family Court of Australia pathways.')" class="w-full border rounded-2xl p-4 text-left"><div class="font-semibold">Parenting Plan &amp; Consent Orders</div></button>
+                        <button onclick="alert('Divorce application (FCFCOA) — 12-month separation requirement explained (demo).')" class="w-full border rounded-2xl p-4 text-left"><div class="font-semibold">Divorce Application Kit</div></button>
+                        <button onclick="showSection('category-section')" class="w-full py-3 bg-blue-800 text-white rounded-2xl font-semibold">Book family lawyer call</button>
+                    </div>
+                </div>
+
+                <!-- ATO AUDIT DEFENCE (LegalShield audit) -->
+                <div id="ato-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('services-hub-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">ATO Audit Defence</div>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4 text-xs text-amber-900">LegalShield-style audit defence — lawyer assists with ATO review, objection, and Taxation Appeals (Shield Pro).</div>
+                    <textarea id="ato-details" rows="3" placeholder="Describe ATO notice or audit scope..." class="w-full border rounded-xl px-3 py-2 text-sm mb-3"></textarea>
+                    <button onclick="submitAtoReview()" class="w-full py-3 bg-amber-700 text-white rounded-2xl font-semibold text-sm">Request tax lawyer review</button>
+                </div>
+
+                <!-- ASIC REGISTERED OFFICE (LegalZoom registered agent) -->
+                <div id="asic-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('business-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">ASIC Registered Office</div>
+                    </div>
+                    <div class="border-2 border-amber-200 rounded-3xl p-5 mb-4 text-sm">
+                        <div class="font-semibold">Virtual registered office — $49/mo</div>
+                        <div class="text-xs text-zinc-500 mt-2">LegalZoom-style service: ASIC mail scanning, annual review reminders, director change forms.</div>
+                        <ul class="text-xs text-zinc-600 mt-3 space-y-1 list-disc pl-4">
+                            <li>Gold Coast business address on public record</li>
+                            <li>Same-day scan of ASIC correspondence</li>
+                            <li>Calendar alerts for review due dates</li>
+                        </ul>
+                        <button onclick="alert('ASIC registered office activated (demo). Mail forwarding to your email.')" class="w-full mt-4 py-3 bg-amber-600 text-white rounded-2xl font-semibold text-sm">Activate service</button>
+                    </div>
+                </div>
+
+                <!-- COURT PREP (ShieldAU + LegalShield trial prep) -->
+                <div id="courtprep-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('matters-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Court Appearance Prep</div>
+                    </div>
+                    <div id="courtprep-checklist" class="space-y-2 text-sm"></div>
+                </div>
+
+                <!-- BAIL & BOND -->
+                <div id="bail-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('rights-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Bail &amp; Bond Guide</div>
+                    </div>
+                    <div class="space-y-3 text-xs text-zinc-600">
+                        <div class="border rounded-xl p-3"><strong class="text-zinc-800">Show cause / bail</strong><p class="mt-1">If arrested, you may apply for bail. A lawyer can argue show cause and conditions. Call video connect immediately.</p></div>
+                        <div class="border rounded-xl p-3"><strong class="text-zinc-800">Bail conditions</strong><p class="mt-1">Curfew, reporting, no-contact — breaching bail is a separate offence. Document conditions in Matters tracker.</p></div>
+                        <div class="border rounded-xl p-3"><strong class="text-zinc-800">Surety</strong><p class="mt-1">A person may pledge money/property. They should get independent legal advice before agreeing.</p></div>
+                    </div>
+                    <button onclick="showSection('category-section')" class="w-full mt-4 py-3 bg-red-700 text-white rounded-2xl font-semibold text-sm">Connect bail lawyer now</button>
+                </div>
+
+                <!-- EXPERT SPECIALTIES (JustAnswer browse) -->
+                <div id="experts-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('asklawyer-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Browse Experts</div>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mb-3 text-[10px]" id="expert-filters"></div>
+                    <div id="experts-list" class="space-y-2 text-sm"></div>
+                </div>
+
+                <!-- SIGNING TRACKER (RocketSign) -->
+                <div id="signing-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('templates-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Signing Tracker</div>
+                    </div>
+                    <div id="signing-list" class="space-y-2 text-xs"></div>
+                </div>
+
                 <!-- REFER A FRIEND -->
                 <div id="referrals-section" class="section">
                     <div class="flex items-center gap-x-3 mb-3">
@@ -1661,9 +1886,13 @@
         </div>
 
         <div class="text-center mt-4 text-[10px] text-zinc-500 px-4">
-            Non-functional demo. Production requires licensed lawyers, formal panel agreements, Privacy Act compliance, and Australian legal review.
+            ShieldAU Ultimate v2.0 — best of Rocket Lawyer, LegalZoom, LegalShield, JustAnswer + emergency video. Demo only.
         </div>
     </div>
+
+    <button onclick="sosConnect()" class="sos-fab" title="Emergency lawyer video" aria-label="SOS connect lawyer">
+        <i class="fa-solid fa-video"></i>
+    </button>
 
     <!-- PIN to end modal -->
     <div id="pin-modal" class="modal-overlay">
@@ -1868,8 +2097,59 @@
             'will-starter': 'Simple Will Starter Kit',
             'nda': 'Non-Disclosure Agreement (NDA)',
             'lease': 'Residential Lease Agreement',
-            'poa': 'Enduring Power of Attorney'
+            'poa': 'Enduring Power of Attorney',
+            'separation': 'Separation Agreement'
         };
+
+        const SERVICE_INDEX = [
+            { name: 'Instant Lawyer Video', section: 'category-section', tags: 'emergency police sos video', cat: 'Emergency' },
+            { name: '24/7 Legal Hotline', section: 'hotline-section', tags: 'phone call legalshield', cat: 'Emergency' },
+            { name: 'Ask a Lawyer', section: 'asklawyer-section', tags: 'chat question justanswer', cat: 'Consult' },
+            { name: 'Shield Copilot AI', section: 'copilot-section', tags: 'ai draft rocket lawyer', cat: 'Consult' },
+            { name: 'Browse Experts', section: 'experts-section', tags: 'specialist justanswer', cat: 'Consult' },
+            { name: 'Legal Templates', section: 'templates-section', tags: 'document rocket lawyer', cat: 'Documents' },
+            { name: 'E-Sign & Signing Tracker', section: 'signing-section', tags: 'sign rocketsign', cat: 'Documents' },
+            { name: 'Legal Vault', section: 'vault-section', tags: 'storage archive', cat: 'Documents' },
+            { name: 'Document Review', section: 'templates-section', tags: 'upload lawyer review', cat: 'Documents' },
+            { name: 'Letters & Calls For You', section: 'attorney-action-section', tags: 'legalshield demand', cat: 'Documents' },
+            { name: 'Fine & Infringement Defence', section: 'ticket-section', tags: 'traffic ticket speeding legalshield', cat: 'Traffic' },
+            { name: 'Court & Deadlines', section: 'calendar-section', tags: 'reminder legalzoom asic', cat: 'Court' },
+            { name: 'Court Appearance Prep', section: 'courtprep-section', tags: 'checklist trial', cat: 'Court' },
+            { name: 'My Matters', section: 'matters-section', tags: 'case tracker', cat: 'Court' },
+            { name: 'Bail & Bond Guide', section: 'bail-section', tags: 'arrest custody', cat: 'Criminal' },
+            { name: 'Know Your Rights', section: 'rights-section', tags: 'qld nsw vic police', cat: 'Criminal' },
+            { name: 'Estate Planning', section: 'estate-section', tags: 'will poa legalzoom', cat: 'Estate' },
+            { name: 'Divorce & Family Law', section: 'divorce-section', tags: 'separation parenting legalzoom', cat: 'Family' },
+            { name: 'Business Legal', section: 'business-section', tags: 'abn company legalzoom', cat: 'Business' },
+            { name: 'ASIC Registered Office', section: 'asic-section', tags: 'registered agent mail', cat: 'Business' },
+            { name: 'ATO Audit Defence', section: 'ato-section', tags: 'tax audit legalshield', cat: 'Business' },
+            { name: 'Digital Glovebox', section: 'glovebox-section', tags: 'id licence', cat: 'ShieldAU' },
+            { name: 'Emergency Contacts', section: 'emergency-section', tags: 'sms location alert', cat: 'ShieldAU' },
+            { name: 'Family Plan', section: 'family-section', tags: 'sub accounts legalshield', cat: 'Membership' },
+            { name: 'Identity Shield', section: 'identity-section', tags: 'theft monitoring', cat: 'Membership' },
+            { name: 'Supplemental Coverage', section: 'addons-section', tags: 'gig gun driver', cat: 'Membership' },
+            { name: 'Your Law Firm', section: 'provider-section', tags: 'panel legalshield', cat: 'Membership' },
+            { name: 'Legal Library', section: 'library-section', tags: 'articles guides', cat: 'Resources' },
+            { name: 'Medicinal Cannabis', section: 'cannabis-section', tags: 'thc driving qld', cat: 'Resources' },
+            { name: 'Aboriginal Legal Services', section: 'aboriginal-section', tags: 'atsils als vals', cat: 'Resources' }
+        ];
+
+        const COURT_PREP_ITEMS = [
+            'Confirm court date, time, and courtroom in Calendar',
+            'Dress appropriately — business casual minimum',
+            'Arrive 30 minutes early with photo ID',
+            'Bring all documents — notices, bail papers, character refs',
+            'Phone on silent — lawyer will attend or appear via video',
+            'Do not discuss case in courthouse corridors',
+            'Review your factual summary — stick to what you documented'
+        ];
+
+        const DEFAULT_NOTIFICATIONS = [
+            { title: 'Court reminder', body: 'Mention hearing in 48h — Southport Magistrates', time: '2h ago', unread: true },
+            { title: 'Document review complete', body: 'Your employment contract review is ready', time: '1d ago', unread: true },
+            { title: 'Shield Credit renewed', body: '$45 credit added — Shield Plus', time: '3d ago', unread: true },
+            { title: 'Signing invite accepted', body: 'Witness signed your Stat Dec', time: '5d ago', unread: false }
+        ];
 
         const LIBRARY_ARTICLES = [
             { title: 'Your rights when pulled over in QLD', cat: 'police', snippet: 'Identification, searches, silence, and lawyer access.' },
@@ -2064,7 +2344,140 @@
         function inviteEsign() {
             const email = document.getElementById('esign-invite').value.trim();
             if (!email) { alert('Enter witness/signatory email.'); return; }
-            alert(`Signing invite sent to ${email}. Multi-party e-sign tracked in Legal Vault (demo).`);
+            addSigningEntry(selectedTemplate ? TEMPLATE_NAMES[selectedTemplate] : 'Document', 'Awaiting witness', email);
+            alert(`Signing invite sent to ${email}. Track in Signing Tracker.`);
+        }
+
+        function sosConnect() {
+            if (confirm('Connect to emergency lawyer video now?')) {
+                selectedCategory = selectedCategory || 'general';
+                showSection('category-section');
+            }
+        }
+
+        function globalSearch(q) {
+            const el = document.getElementById('search-results');
+            if (!el) return;
+            const term = (q || '').trim().toLowerCase();
+            if (!term) { el.innerHTML = '<div class="text-xs text-zinc-400">Type to search 30+ legal services...</div>'; return; }
+            const hits = SERVICE_INDEX.filter(s => s.name.toLowerCase().includes(term) || s.tags.includes(term) || s.cat.toLowerCase().includes(term));
+            el.innerHTML = hits.length ? hits.map(s => `<button onclick="showSection('${s.section}')" class="w-full border rounded-xl p-3 text-left hover:bg-zinc-50"><div class="font-medium">${s.name}</div><div class="text-[10px] text-zinc-500">${s.cat}</div></button>`).join('') : '<div class="text-xs text-zinc-400">No matches — try court, will, or traffic</div>';
+        }
+
+        function renderServicesHub() {
+            const el = document.getElementById('services-hub-list');
+            if (!el) return;
+            const cats = [...new Set(SERVICE_INDEX.map(s => s.cat))];
+            el.innerHTML = cats.map(c => `<div><div class="text-xs font-semibold text-zinc-500 mb-2">${c}</div><div class="space-y-1.5">${SERVICE_INDEX.filter(s => s.cat === c).map(s => `<button onclick="showSection('${s.section}')" class="w-full border rounded-xl p-3 text-left flex justify-between hover:bg-zinc-50"><span>${s.name}</span><i class="fa-solid fa-chevron-right text-zinc-300 text-xs"></i></button>`).join('')}</div></div>`).join('');
+        }
+
+        function logActivity(text) {
+            const log = JSON.parse(localStorage.getItem('shieldau_activity') || '[]');
+            log.unshift({ text, time: new Date().toLocaleString('en-AU') });
+            localStorage.setItem('shieldau_activity', JSON.stringify(log.slice(0, 8)));
+            renderDashboard();
+        }
+
+        function renderDashboard() {
+            const act = document.getElementById('dashboard-activity');
+            const up = document.getElementById('dashboard-upcoming');
+            if (act) {
+                const log = JSON.parse(localStorage.getItem('shieldau_activity') || '[]');
+                const defaults = [{ text: 'Shield Plus membership active', time: 'Today' }, { text: 'Glovebox: QLD licence stored', time: 'Yesterday' }];
+                act.innerHTML = (log.length ? log : defaults).map(i => `<div class="border rounded-xl p-3 flex justify-between"><span>${i.text}</span><span class="text-zinc-400 shrink-0 ml-2">${i.time}</span></div>`).join('');
+            }
+            if (up) {
+                const events = getCalendarEvents();
+                const list = events.length ? events : [{ title: 'Licence renewal', date: '2026-08-15' }];
+                up.innerHTML = list.slice(0, 3).map(e => `<div class="border rounded-xl p-3 bg-amber-50"><div class="font-medium">${e.title}</div><div class="text-zinc-500">${e.date}</div></div>`).join('');
+            }
+            const dc = document.getElementById('dash-credit');
+            if (dc) dc.textContent = formatMoney(walletBalance);
+            const dm = document.getElementById('dash-matters');
+            if (dm) dm.textContent = String(Math.max(getMatters().length, 1));
+        }
+
+        function renderNotifications() {
+            const el = document.getElementById('notifications-list');
+            if (!el) return;
+            el.innerHTML = DEFAULT_NOTIFICATIONS.map(n => `<div class="border rounded-xl p-3 ${n.unread ? 'bg-blue-50 border-blue-100' : ''}"><div class="font-medium text-sm">${n.title}</div><div class="text-zinc-600 mt-0.5">${n.body}</div><div class="text-[10px] text-zinc-400 mt-1">${n.time}</div></div>`).join('');
+        }
+
+        function getMatters() { try { return JSON.parse(localStorage.getItem('shieldau_matters') || '[]'); } catch { return []; } }
+        function renderMatters() {
+            const el = document.getElementById('matters-list');
+            if (!el) return;
+            let matters = getMatters();
+            if (!matters.length) matters = [{ title: 'Traffic matter — June 2026', type: 'Traffic', status: 'Lawyer assigned', date: '25 Jun 2026' }];
+            el.innerHTML = matters.map((m, i) => `<div class="border rounded-xl p-3 text-xs"><div class="font-semibold">${m.title}</div><div class="text-zinc-500">${m.type} • ${m.date || ''}</div><div class="text-emerald-700 mt-1">${m.status || 'Open'}</div>${m.saved ? `<button onclick="removeMatter(${i})" class="text-red-400 mt-1">Remove</button>` : ''}</div>`).join('');
+        }
+        function addMatter() {
+            const title = document.getElementById('matter-title').value.trim();
+            if (!title) return;
+            const m = getMatters();
+            m.unshift({ title, type: document.getElementById('matter-type').value, status: 'Open', date: new Date().toLocaleDateString('en-AU'), saved: true });
+            localStorage.setItem('shieldau_matters', JSON.stringify(m));
+            renderMatters();
+            logActivity('Matter added: ' + title);
+            document.getElementById('matter-title').value = '';
+        }
+        function removeMatter(i) { const m = getMatters(); m.splice(i, 1); localStorage.setItem('shieldau_matters', JSON.stringify(m)); renderMatters(); }
+
+        function submitAtoReview() {
+            if (!document.getElementById('ato-details').value.trim()) { alert('Describe your ATO notice.'); return; }
+            logActivity('ATO audit review requested');
+            alert('Tax lawyer assigned — response within 2 business days (Shield Pro demo).');
+        }
+
+        function renderCourtPrep() {
+            const el = document.getElementById('courtprep-checklist');
+            if (!el) return;
+            const done = JSON.parse(localStorage.getItem('shieldau_courtprep') || '[]');
+            el.innerHTML = COURT_PREP_ITEMS.map((item, i) => `<label class="flex items-start gap-3 border rounded-xl p-3 cursor-pointer"><input type="checkbox" class="mt-1" ${done.includes(i) ? 'checked' : ''} onchange="toggleCourtPrep(${i}, this.checked)"><span>${item}</span></label>`).join('');
+        }
+        function toggleCourtPrep(i, checked) {
+            const done = JSON.parse(localStorage.getItem('shieldau_courtprep') || '[]');
+            if (checked && !done.includes(i)) done.push(i);
+            else if (!checked) { const idx = done.indexOf(i); if (idx >= 0) done.splice(idx, 1); }
+            localStorage.setItem('shieldau_courtprep', JSON.stringify(done));
+        }
+
+        function renderExperts(filter = 'all') {
+            const filters = document.getElementById('expert-filters');
+            const list = document.getElementById('experts-list');
+            if (!list) return;
+            const areas = ['all', 'Criminal', 'Traffic', 'Family', 'Business', 'Estate', 'Tax'];
+            if (filters) filters.innerHTML = areas.map(a => `<button onclick="renderExperts('${a}')" class="px-2 py-1 rounded-full border ${filter === a ? 'bg-violet-700 text-white border-violet-700' : 'bg-white'}">${a === 'all' ? 'All' : a}</button>`).join('');
+            const experts = [
+                { name: 'Michael Torres', area: 'Criminal', rating: 4.8, answers: 1204 },
+                { name: 'Dr. Priya Sharma', area: 'Traffic', rating: 4.9, answers: 312 },
+                { name: 'Elena Vasquez', area: 'Estate', rating: 4.9, answers: 890 },
+                { name: 'James Okonkwo', area: 'Family', rating: 4.7, answers: 445 },
+                { name: 'Sarah Chen', area: 'Tax', rating: 4.8, answers: 567 },
+                { name: 'David Ng', area: 'Business', rating: 4.6, answers: 321 }
+            ];
+            const shown = filter === 'all' ? experts : experts.filter(e => e.area === filter);
+            list.innerHTML = shown.map(e => `<div class="border rounded-xl p-3 flex gap-3"><img src="https://i.pravatar.cc/40?img=${Math.floor(Math.random()*30)}" class="w-10 h-10 rounded-full"><div class="flex-1"><div class="font-medium">${e.name}</div><div class="text-[10px] text-zinc-500">${e.area} • <span class="text-amber-500">${e.rating}★</span> • ${e.answers} answers</div></div><button onclick="showSection('asklawyer-section')" class="text-xs text-violet-700 font-medium">Ask</button></div>`).join('');
+        }
+
+        function addSigningEntry(doc, status, party) {
+            const s = JSON.parse(localStorage.getItem('shieldau_signing') || '[]');
+            s.unshift({ doc, status, party: party || 'You', date: new Date().toLocaleDateString('en-AU') });
+            localStorage.setItem('shieldau_signing', JSON.stringify(s.slice(0, 6)));
+            renderSigning();
+        }
+        function renderSigning() {
+            const el = document.getElementById('signing-list');
+            if (!el) return;
+            const s = JSON.parse(localStorage.getItem('shieldau_signing') || '[]');
+            const defaults = [{ doc: 'Statutory Declaration', status: 'Completed', party: 'You', date: '20 Jun 2026' }, { doc: 'Character Reference', status: 'Awaiting witness', party: 'j.smith@email.com', date: '22 Jun 2026' }];
+            el.innerHTML = (s.length ? s : defaults).map(i => `<div class="border rounded-xl p-3 flex justify-between"><div><div class="font-medium">${i.doc}</div><div class="text-zinc-500">${i.party} • ${i.date}</div></div><span class="${i.status === 'Completed' ? 'text-emerald-600' : 'text-amber-600'} font-medium">${i.status}</span></div>`).join('');
+        }
+
+        function downloadCallReceipt() {
+            const total = document.getElementById('postcall-total')?.textContent || '$90.00';
+            logActivity('Call receipt downloaded — ' + total);
+            alert(`Call receipt PDF generated (demo).\n\nTotal: ${total}\nLawyer: Dr. Priya Sharma\nSaved to Legal Vault.`);
         }
 
         function quickAsk(q) {
@@ -2110,7 +2523,9 @@
             if (!selectedTemplate) { alert('Select a template from the Library first.'); return; }
             const name = document.getElementById('esign-name').value.trim();
             if (!name) { alert('Enter your full name for the signature.'); return; }
-            alert(`${TEMPLATE_NAMES[selectedTemplate]} signed by ${name}. PDF saved to your Glovebox (demo).`);
+            addSigningEntry(TEMPLATE_NAMES[selectedTemplate], 'Completed', name);
+            logActivity('E-signed: ' + TEMPLATE_NAMES[selectedTemplate]);
+            alert(`${TEMPLATE_NAMES[selectedTemplate]} signed by ${name}. PDF saved to Legal Vault (demo).`);
         }
 
         function submitAttorneyAction() {
@@ -2160,6 +2575,9 @@
                 'asklawyer-section': 1, 'templates-section': 1, 'attorney-action-section': 1,
                 'business-section': 1, 'rights-section': 1, 'aboriginal-section': 1,
                 'provider-section': 3, 'directory-section': 3, 'addons-section': 3, 'referrals-section': 3,
+                'dashboard-section': 0, 'search-section': 0, 'notifications-section': 0, 'services-hub-section': 0,
+                'matters-section': 0, 'divorce-section': 1, 'ato-section': 1, 'asic-section': 1,
+                'courtprep-section': 0, 'bail-section': 1, 'experts-section': 1, 'signing-section': 1,
                 'document-section': 2, 'glovebox-section': 2,
                 'more-section': 3, 'wallet-section': 3, 'emergency-section': 3,
                 'family-section': 3, 'terms-section': 3, 'privacy-section': 3, 'identity-section': 3
@@ -2577,6 +2995,8 @@
             localStorage.setItem('shieldau_wallet', walletBalance);
             updateWalletDisplays();
             document.getElementById('postcall-remaining').textContent = formatMoney(walletBalance);
+            logActivity('Video call ended — ' + formatMoney(total) + ' deducted');
+            renderDashboard();
             showSection('postcall-section');
         }
 
@@ -2642,6 +3062,14 @@
         renderCalendar();
         renderLibrary();
         renderDirectory();
+        renderServicesHub();
+        renderDashboard();
+        renderNotifications();
+        renderMatters();
+        renderCourtPrep();
+        renderExperts();
+        renderSigning();
+        globalSearch('');
         updateCounts();
 
         // Live clock

@@ -2,7 +2,7 @@
   "id": "/shieldau/",
   "name": "ShieldAU",
   "short_name": "ShieldAU",
-  "description": "Instant connection to Australian lawyers during police interactions",
+  "description": "Australia's ultimate legal platform — emergency video, 24/7 hotline, AI copilot, templates, and membership",
   "start_url": "/shieldau/index.html",
   "scope": "/shieldau/",
   "display": "standalone",
@@ -35,16 +35,23 @@
   ],
   "shortcuts": [
     {
-      "name": "Connect to Lawyer",
-      "short_name": "Connect",
-      "description": "Instant video connect to a Queensland lawyer",
+      "name": "Emergency Video Lawyer",
+      "short_name": "SOS Video",
+      "description": "Instant video connect during police interactions",
       "url": "/shieldau/index.html",
       "icons": [{ "src": "/shieldau/icons/icon-96.png", "sizes": "96x96", "type": "image/png" }]
     },
     {
-      "name": "Know Your Rights",
-      "short_name": "Rights",
-      "description": "QLD, NSW and VIC rights guides",
+      "name": "Ask a Lawyer",
+      "short_name": "Ask",
+      "description": "Chat with verified Australian lawyers",
+      "url": "/shieldau/index.html",
+      "icons": [{ "src": "/shieldau/icons/icon-96.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "24/7 Hotline",
+      "short_name": "Hotline",
+      "description": "Unlimited legal consults on covered matters",
       "url": "/shieldau/index.html",
       "icons": [{ "src": "/shieldau/icons/icon-96.png", "sizes": "96x96", "type": "image/png" }]
     }
@@ -55,7 +62,7 @@
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "ShieldAU mobile home screen"
+      "label": "ShieldAU Ultimate home screen"
     },
     {
       "src": "/shieldau/screenshots/wide.png",
