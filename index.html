@@ -473,8 +473,8 @@
                             <button onclick="showSection('wallet-section')" class="text-[10px] text-emerald-700 underline">Manage</button>
                         </div>
                         <div class="text-2xl font-semibold text-emerald-900" id="home-wallet-balance">$149.00</div>
-                        <div class="text-[10px] text-emerald-700 mt-1">Overage credit — pays lawyers for minutes 16+ after your free block. Top up anytime (demo).</div>
-                        <div class="text-[10px] text-zinc-500 mt-2">First <span id="home-first-block">15 min FREE</span> with Shield Basic ($15/mo) • then <span id="home-per-min">$6.00/min</span></div>
+                        <div class="text-[10px] text-emerald-700 mt-1">Only for minutes 16+ — subscription pool covers your first 15 min free each call.</div>
+                        <div class="text-[10px] text-zinc-500 mt-2"><span id="home-first-block">First 15 min FREE</span> ($15/mo) • then <span id="home-per-min">$6.00/min</span> • recording continues after arrest</div>
                     </div>
 
                     <div class="bg-zinc-50 border border-zinc-200 rounded-2xl p-4 mb-4">
@@ -617,7 +617,7 @@
                             <div class="pt-2 border-t flex justify-between font-semibold text-zinc-800">
                                 <span>Your balance</span><span id="match-wallet-balance">$149.00</span>
                             </div>
-                            <div class="text-[10px] text-zinc-500">Credit deducted at end of call. ShieldAU pays the independent lawyer from your subscription pool.</div>
+                            <div class="text-[10px] text-zinc-500">First 15 min: ShieldAU pays lawyer from member subscriptions — $0 to you. After that: per-minute from Shield Credit until lawyer ends call.</div>
                         </div>
 
                         <button onclick="simulateCall()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-3xl flex items-center justify-center gap-x-2">
@@ -635,6 +635,13 @@
                     <div id="emergency-banner" class="hidden emergency-sent-banner bg-red-600 text-white text-[10px] px-3 py-2 rounded-xl mb-3 flex items-center gap-2">
                         <i class="fa-solid fa-paper-plane"></i>
                         <span id="emergency-banner-text">Emergency alert sent</span>
+                    </div>
+                    <div id="arrest-protection-banner" class="hidden bg-amber-600 text-white text-[10px] px-3 py-2 rounded-xl mb-3">
+                        <div class="flex items-center gap-2 font-semibold">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>Arrest Protection — session &amp; recording continue</span>
+                        </div>
+                        <div class="mt-1 opacity-90" id="arrest-protection-text">Lawyer stays on and camera keeps rolling after arrest to protect your rights. Evidence saved to your vault — independent of police body-cam footage.</div>
                     </div>
 
                     <div class="video-stage mb-3">
@@ -654,9 +661,10 @@
                                 <span class="text-[9px] text-zinc-400">You</span>
                             </div>
                         </div>
-                        <div class="absolute top-3 left-3 z-30 flex gap-2">
+                        <div class="absolute top-3 left-3 z-30 flex flex-wrap gap-2">
                             <span class="text-[9px] bg-black/50 text-white px-2 py-1 rounded-full"><i class="fa-solid fa-lock mr-1"></i>Agora E2E</span>
                             <span class="text-[9px] bg-emerald-600/80 text-white px-2 py-1 rounded-full" id="pip-badge">PiP ready</span>
+                            <span class="text-[9px] bg-red-600/90 text-white px-2 py-1 rounded-full hidden" id="evidence-rec-badge"><i class="fa-solid fa-circle text-[6px] mr-1 rec-dot"></i>Evidence Shield REC</span>
                         </div>
                     </div>
 
@@ -666,14 +674,17 @@
                     </div>
 
                     <div class="bg-blue-50 border border-blue-200 rounded-xl p-2.5 mb-3 flex justify-between items-center text-xs">
-                        <span class="text-blue-800">Shield Credit</span>
+                        <div>
+                            <span class="text-blue-800 font-medium">Your cost this call</span>
+                            <div class="text-[10px] text-blue-600" id="call-billing-phase">Included in subscription</div>
+                        </div>
                         <div class="text-right">
                             <span class="font-semibold text-blue-900" id="call-running-cost">$0.00</span>
-                            <div class="text-[10px] text-blue-600" id="call-billing-phase">Included in subscription</div>
+                            <div class="text-[10px] text-zinc-500" id="call-billing-hint">First 15 min free with $15/mo</div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-4 gap-2 mb-3">
+                    <div class="grid grid-cols-5 gap-2 mb-3">
                         <button onclick="toggleMute()" id="mute-btn" class="py-2.5 bg-zinc-100 rounded-xl text-[10px] font-medium flex flex-col items-center gap-1">
                             <i class="fa-solid fa-microphone text-sm"></i> Mute
                         </button>
@@ -686,12 +697,15 @@
                         <button onclick="shareNotesWithLawyer()" class="py-2.5 bg-zinc-100 rounded-xl text-[10px] font-medium flex flex-col items-center gap-1">
                             <i class="fa-solid fa-share text-sm"></i> Notes
                         </button>
+                        <button onclick="activateArrestProtection()" id="arrest-btn" class="py-2.5 bg-amber-100 text-amber-900 rounded-xl text-[10px] font-medium flex flex-col items-center gap-1">
+                            <i class="fa-solid fa-handcuffs text-sm"></i> Arrest
+                        </button>
                     </div>
 
                     <button onclick="showPinModal()" class="w-full py-3.5 bg-red-600 text-white rounded-2xl font-semibold flex items-center justify-center gap-x-2 text-sm">
                         <i class="fa-solid fa-lock"></i> End Session (PIN required)
                     </button>
-                    <div class="text-[10px] text-center text-zinc-400 mt-2">Recording available only if you &amp; lawyer both consent (demo: off)</div>
+                    <div class="text-[10px] text-center text-zinc-400 mt-2" id="call-recording-footnote">Evidence Shield auto-records emergency sessions. Stays on after arrest until your lawyer ends the call (demo).</div>
                 </div>
 
                 <!-- POST-CALL -->
@@ -715,6 +729,7 @@
                                 <span id="postcall-total">—</span>
                             </div>
                             <div class="text-[10px] text-zinc-500 mt-1">Remaining balance: <span id="postcall-remaining" class="font-medium">—</span></div>
+                            <div class="text-[10px] text-amber-700 mt-2 hidden" id="postcall-recording-note"><i class="fa-solid fa-shield-halved mr-1"></i>Evidence Shield recording saved to Legal Vault.</div>
                         </div>
                     </div>
 
@@ -1116,7 +1131,7 @@
                         <p><strong>Compliance.</strong> We comply with the Privacy Act 1988 (Cth) and Australian Privacy Principles (APPs).</p>
                         <p><strong>Data collected.</strong> Account details, incident notes (with consent), connection logs, and payment information. We collect only what is necessary.</p>
                         <p><strong>Sensitive information.</strong> Legal and health-related data receives heightened protection, explicit consent, encryption at rest and in transit, and Australia-preferred hosting.</p>
-                        <p><strong>Call recordings.</strong> ShieldAU does not record calls unless both user and lawyer explicitly consent for a specific purpose (e.g. lawyer's file).</p>
+                        <p><strong>Evidence Shield recordings.</strong> Emergency video sessions are recorded and encrypted for your protection — including after arrest — and stored in your Legal Vault. You control access; production requires Australian legal review.</p>
                         <p><strong>Your rights.</strong> Access, correction, and deletion of your data. Contact privacy@shieldau.com.au (demo).</p>
                         <p><strong>Retention.</strong> Notes retained per your settings; deleted on request unless required for legal obligations.</p>
                     </div>
@@ -1697,12 +1712,12 @@
                     <div class="border rounded-2xl p-4 mb-4 text-xs">
                         <div class="font-semibold text-sm mb-2">How lawyer billing works</div>
                         <ol class="text-zinc-600 space-y-2 list-decimal pl-4">
-                            <li><strong>First 15 minutes</strong> — <strong>FREE</strong> with your Shield Basic subscription ($15/mo). Covers most police-stop consults.</li>
-                            <li><strong>Minutes 16+</strong> — billed per minute at the lawyer's hourly rate ÷ 60, deducted from your Shield Credit.</li>
-                            <li><strong>Subscription revenue</strong> — pre-funds panel lawyers so you never pay during an emergency.</li>
+                            <li><strong>First 15 minutes — FREE to you.</strong> Included with Shield Basic ($15/mo). ShieldAU pays the lawyer from pooled subscription fees — <em>not</em> a minimum block charge like competitors.</li>
+                            <li><strong>Minutes 16+</strong> — you pay per minute (lawyer hourly rate ÷ 60) from Shield Credit until the lawyer ends the session.</li>
+                            <li><strong>Arrest Protection</strong> — video and recording continue after arrest. Your lawyer stays on as long as needed; footage is saved to your vault.</li>
                         </ol>
                         <div class="mt-3 p-2 bg-zinc-50 rounded-xl text-[10px] text-zinc-500">
-                            Example at $360/hr ($6/min): 4 min call = $0 • 25 min = $60 • 60 min = $270
+                            Example at $360/hr ($6/min): 4 min = $0 to you • 25 min = $60 (10 paid mins) • Lawyer may stay on through arrest; billing follows the same rules.
                         </div>
                     </div>
 
@@ -1759,7 +1774,7 @@
 
                     <div class="border rounded-2xl p-4 text-xs text-zinc-600 mb-4">
                         <div class="font-semibold text-zinc-800 mb-1">Why $15/mo + free 15 minutes?</div>
-                        <p>Your subscription pre-funds the first 15 minutes on every call — enough for most police stops. Subscription volume pays panel lawyers promptly. Minutes 16+ draw from Shield Credit so you never scramble for payment mid-incident.</p>
+                        <p>Many members paying $15/mo creates a pool that covers the first 15 minutes for everyone — you are not charged a $90 minimum block for a 4-minute stop. Minutes 16+ use Shield Credit at per-minute rates. The lawyer decides when to end the call, including after arrest while recording continues.</p>
                     </div>
 
                     <button onclick="topUpWallet()" class="w-full py-3 bg-blue-800 text-white rounded-2xl text-sm font-semibold">Top up $50 credit (demo)</button>
@@ -1950,6 +1965,8 @@
         let pinBuffer = '';
         let isMuted = false;
         let cameraOn = true;
+        let arrestProtectionActive = false;
+        let evidenceRecording = false;
         const DEMO_PIN = '1234';
         const LAWYER_HOURLY_RATE = 360;
 
@@ -2619,6 +2636,15 @@
 
         function simulateCall() {
             showSection('call-section');
+            arrestProtectionActive = false;
+            evidenceRecording = true;
+            document.getElementById('arrest-protection-banner')?.classList.add('hidden');
+            document.getElementById('evidence-rec-badge')?.classList.remove('hidden');
+            const arrestBtn = document.getElementById('arrest-btn');
+            if (arrestBtn) {
+                arrestBtn.classList.remove('bg-amber-600', 'text-white');
+                arrestBtn.classList.add('bg-amber-100', 'text-amber-900');
+            }
             document.getElementById('call-advice').textContent = categoryAdvice[selectedCategory] || categoryAdvice.general;
             callSeconds = 0;
             updateCallTimer();
@@ -2631,6 +2657,22 @@
             const alertOn = document.getElementById('emergency-alert-checkbox')?.checked
                 && document.getElementById('emergency-master-toggle')?.checked;
             if (alertOn) sendEmergencyAlert('Lawyer video session started');
+        }
+
+        function activateArrestProtection() {
+            if (arrestProtectionActive) return;
+            arrestProtectionActive = true;
+            evidenceRecording = true;
+            document.getElementById('arrest-protection-banner')?.classList.remove('hidden');
+            document.getElementById('evidence-rec-badge')?.classList.remove('hidden');
+            const arrestBtn = document.getElementById('arrest-btn');
+            if (arrestBtn) {
+                arrestBtn.classList.remove('bg-amber-100', 'text-amber-900');
+                arrestBtn.classList.add('bg-amber-600', 'text-white');
+            }
+            document.getElementById('call-advice').textContent =
+                '"You are under arrest — do not resist. Say nothing except your name if required. I am staying on the line and recording continues for your protection. Do not sign anything without me. Evidence is being saved to your vault."';
+            logActivity('Arrest Protection activated — recording continues');
         }
 
         function toggleMute() {
@@ -2963,6 +3005,12 @@
             const { total, phase } = calculateCallCost(minutes);
             document.getElementById('call-running-cost').textContent = formatMoney(total);
             document.getElementById('call-billing-phase').textContent = phase;
+            const hint = document.getElementById('call-billing-hint');
+            if (hint) {
+                hint.textContent = minutes <= 15
+                    ? 'Paid by subscription pool — not charged to you'
+                    : 'Per-minute overage from Shield Credit';
+            }
         }
 
         function endCall() {
@@ -2985,7 +3033,12 @@
             localStorage.setItem('shieldau_wallet', walletBalance);
             updateWalletDisplays();
             document.getElementById('postcall-remaining').textContent = formatMoney(walletBalance);
-            logActivity('Video call ended — ' + formatMoney(total) + ' deducted');
+            const postRec = document.getElementById('postcall-recording-note');
+            if (postRec) postRec.classList.toggle('hidden', !(evidenceRecording || arrestProtectionActive));
+            const recNote = evidenceRecording || arrestProtectionActive
+                ? ' Evidence Shield recording saved to Legal Vault' + (arrestProtectionActive ? ' (includes post-arrest footage).' : '.')
+                : '';
+            logActivity('Video call ended — ' + formatMoney(total) + ' deducted' + recNote);
             renderDashboard();
             showSection('postcall-section');
         }
@@ -3024,7 +3077,7 @@
         const savedWallet = localStorage.getItem('shieldau_wallet');
         if (savedWallet) walletBalance = parseFloat(savedWallet);
         updateWalletDisplays();
-        document.getElementById('home-first-block').textContent = '15 min FREE';
+        document.getElementById('home-first-block').textContent = 'First 15 min FREE';
         const homePerMin = document.getElementById('home-per-min');
         if (homePerMin) homePerMin.textContent = formatMoney(LAWYER_HOURLY_RATE / 60) + '/min';
         document.getElementById('match-hourly-rate').textContent = formatMoney(LAWYER_HOURLY_RATE) + '/hr';

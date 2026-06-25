@@ -132,7 +132,10 @@ const required = [
   'function sendAskLawyer',
   'function sendCopilot',
   'Shield Basic',
-  '15 min FREE',
+  'First 15 min FREE',
+  'Arrest Protection',
+  'Evidence Shield REC',
+  'function activateArrestProtection',
 ];
 required.forEach(id => assert(html.includes(id), `Contains: ${id}`));
 
