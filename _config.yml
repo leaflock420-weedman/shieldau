@@ -1,0 +1,12 @@
+theme: null
+plugins: []
+exclude:
+  - node_modules
+  - package.json
+  - package-lock.json
+  - "*.js"
+  - "*.docx"
+  - "*.pptx"
+  - render.yaml
+  - .gitignore
+  - README.md
