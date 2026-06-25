@@ -2,9 +2,22 @@
 
 Australian lawyer-connection platform demo — inspired by Attorney Shield, built for QLD/NSW/VIC compliance.
 
-**Live demo:** https://leaflock420-weedman.github.io/shieldau/index.html
+## Live demo
 
-**GitHub:** https://github.com/leaflock420-weedman/shieldau
+| Platform | URL |
+|----------|-----|
+| **Web app** | https://leaflock420-weedman.github.io/shieldau/ |
+| **Install APK** | https://leaflock420-weedman.github.io/shieldau/install.html |
+| **GitHub** | https://github.com/leaflock420-weedman/shieldau |
+
+## 2-minute walkthrough
+
+1. Accept terms → tap **INSTANT LAWYER VIDEO**
+2. Pick a category → enable emergency alert → **Proceed**
+3. Wait for match → **START VIDEO SESSION**
+4. Tap **ID** → view Digital Glovebox docs
+5. **End Session** → PIN `1234` → see billing summary
+6. **More** → Family Plan, Emergency Contacts, Wallet
 
 ## Features
 
@@ -17,14 +30,6 @@ Australian lawyer-connection platform demo — inspired by Attorney Shield, buil
 - Aboriginal Legal Services links (ATSILS, ALS, VALS)
 - Medicinal cannabis module
 
-## Run locally
-
-Open `index.html` in a browser, or:
-
-```bash
-npx serve .
-```
-
 ## Tests
 
 ```bash
@@ -33,21 +38,9 @@ node test-shieldau.js
 
 ## Deploy
 
-### Render
+GitHub Pages is live from the `/docs` folder on `main`.
 
-1. Push this repo to GitHub
-2. [Render Dashboard](https://dashboard.render.com) → New → Static Site
-3. Connect repo → Build command: `echo ok` → Publish directory: `.`
-
-Or use the included `render.yaml` with Render Blueprint.
-
-### GitHub Pages
-
-Settings → Pages → Source: Deploy from branch `main` → folder `/docs`.
-
-### Android APK
-
-Download from [Releases](https://github.com/leaflock420-weedman/shieldau/releases) or build via [APK-BUILD.md](APK-BUILD.md).
+Android APK: see [APK-BUILD.md](APK-BUILD.md) or [Releases](https://github.com/leaflock420-weedman/shieldau/releases).
 
 ## Disclaimer
 

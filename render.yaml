@@ -3,7 +3,7 @@ services:
     name: shieldau
     runtime: static
     buildCommand: echo "Static site — no build"
-    staticPublishPath: .
+    staticPublishPath: docs
     routes:
       - type: rewrite
         source: /*
