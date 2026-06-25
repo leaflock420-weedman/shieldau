@@ -98,20 +98,28 @@ assert(msg.includes('ShieldAU Alert'), 'Alert has ShieldAU prefix');
 
 // ── HTML structure ─────────────────────────────────────────────────────────
 console.log('\nApp structure (index.html):');
-const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+const html = fs.readFileSync(path.join(__dirname, 'docs', 'index.html'), 'utf8');
 const required = [
   'id="call-section"',
   'id="glovebox-section"',
   'id="emergency-section"',
   'id="family-section"',
   'id="pin-modal"',
+  'id="asklawyer-section"',
+  'id="templates-section"',
+  'id="hotline-section"',
+  'id="attorney-action-section"',
+  'id="business-section"',
   'INSTANT LAWYER VIDEO',
   'Agora E2E',
   'Digital Glovebox',
   'Shield Family',
+  'Ask a Lawyer',
+  '24/7 Legal Hotline',
   'function simulateCall',
   'function sendEmergencyAlert',
   'function showPinModal',
+  'function sendAskLawyer',
 ];
 required.forEach(id => assert(html.includes(id), `Contains: ${id}`));
 

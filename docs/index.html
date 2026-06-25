@@ -154,6 +154,11 @@
             from { opacity: 0; transform: translateY(-8px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        .chat-bubble-user { background: #1e3a8a; color: white; border-radius: 1rem 1rem 0.25rem 1rem; }
+        .chat-bubble-expert { background: #f4f4f5; color: #18181b; border-radius: 1rem 1rem 1rem 0.25rem; }
+        .plan-check { color: #059669; }
+        .plan-dash { color: #d4d4d8; }
     </style>
 </head>
 <body class="bg-zinc-950 py-8">
@@ -211,7 +216,7 @@
             </div>
             <div class="px-3 py-1 bg-zinc-900 rounded-full text-xs text-zinc-400 flex items-center gap-x-1.5">
                 <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                <span>Demo v1.1</span>
+                <span>Demo v1.2</span>
             </div>
         </div>
 
@@ -280,7 +285,38 @@
                         </div>
                     </div>
 
+                    <button onclick="showSection('hotline-section')" class="w-full mb-3 bg-gradient-to-r from-indigo-900 to-blue-900 text-white rounded-3xl p-4 text-left flex items-center gap-4 shadow-lg">
+                        <div class="w-12 h-12 bg-white/15 rounded-2xl flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-headset text-2xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-semibold text-sm">24/7 Legal Hotline</div>
+                            <div class="text-[11px] opacity-80">Unlimited consults on covered matters • LegalShield-style membership</div>
+                        </div>
+                        <span class="text-[10px] bg-emerald-500 px-2 py-1 rounded-full font-medium">Included</span>
+                    </button>
+
                     <div class="grid grid-cols-2 gap-3 mb-5">
+                        <button onclick="showSection('asklawyer-section')" class="bg-white border border-zinc-200 hover:border-zinc-300 p-4 rounded-3xl text-left">
+                            <i class="fa-solid fa-comments text-violet-600 text-xl mb-2"></i>
+                            <div class="font-semibold text-sm">Ask a Lawyer</div>
+                            <div class="text-xs text-zinc-500">Chat Q&amp;A • rated experts</div>
+                        </button>
+                        <button onclick="showSection('templates-section')" class="bg-white border border-zinc-200 hover:border-zinc-300 p-4 rounded-3xl text-left">
+                            <i class="fa-solid fa-file-signature text-blue-700 text-xl mb-2"></i>
+                            <div class="font-semibold text-sm">Legal Templates</div>
+                            <div class="text-xs text-zinc-500">Docs + e-sign • Rocket Lawyer</div>
+                        </button>
+                        <button onclick="showSection('attorney-action-section')" class="bg-white border border-zinc-200 hover:border-zinc-300 p-4 rounded-3xl text-left">
+                            <i class="fa-solid fa-envelope-open-text text-blue-700 text-xl mb-2"></i>
+                            <div class="font-semibold text-sm">Letters &amp; Calls</div>
+                            <div class="text-xs text-zinc-500">Lawyer acts for you • LegalShield</div>
+                        </button>
+                        <button onclick="showSection('business-section')" class="bg-white border border-zinc-200 hover:border-zinc-300 p-4 rounded-3xl text-left">
+                            <i class="fa-solid fa-briefcase text-amber-700 text-xl mb-2"></i>
+                            <div class="font-semibold text-sm">Business Legal</div>
+                            <div class="text-xs text-zinc-500">ABN, contracts • LegalZoom</div>
+                        </button>
                         <button onclick="showSection('rights-section')" class="bg-white border border-zinc-200 hover:border-zinc-300 p-4 rounded-3xl text-left">
                             <i class="fa-solid fa-balance-scale text-blue-700 text-xl mb-2"></i>
                             <div class="font-semibold text-sm">Know Your Rights</div>
@@ -452,7 +488,11 @@
                                 <div class="flex-1 min-w-0">
                                     <div class="font-semibold">Dr. Priya Sharma</div>
                                     <div class="text-xs text-zinc-500">Partner: Gold Coast Criminal Law Group</div>
-                                    <div class="text-sm text-emerald-600 mt-1">Available now</div>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="text-amber-500 text-xs"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></span>
+                                        <span class="text-[10px] text-zinc-500">4.9 • 312 reviews</span>
+                                    </div>
+                                    <div class="text-sm text-emerald-600 mt-1">Available now • &lt; 2 min wait</div>
                                     <div class="text-[10px] text-zinc-400 mt-1">Practising cert: QLD #S1234567 (demo)</div>
                                     <div class="text-xs text-zinc-500 mt-1">Specialist: Police interactions, drug driving</div>
                                 </div>
@@ -974,6 +1014,209 @@
                     </div>
                 </div>
 
+                <!-- 24/7 HOTLINE (LegalShield) -->
+                <div id="hotline-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-4">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">24/7 Legal Hotline</div>
+                    </div>
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-3xl p-5 mb-4 text-center">
+                        <div class="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fa-solid fa-phone text-white text-2xl"></i>
+                        </div>
+                        <div class="font-semibold text-lg text-indigo-900">Always-on legal access</div>
+                        <p class="text-xs text-indigo-800 mt-2">Unlimited phone consults on covered matters while your Shield membership is active — inspired by LegalShield prepaid plans.</p>
+                        <button onclick="startHotlineCall()" class="mt-4 w-full py-4 bg-indigo-700 text-white rounded-2xl font-semibold text-sm">
+                            <i class="fa-solid fa-phone-volume mr-2"></i> Call 24/7 Hotline (demo)
+                        </button>
+                        <div id="hotline-status" class="hidden mt-3 text-xs text-indigo-700 bg-white rounded-xl p-3 border border-indigo-100"></div>
+                    </div>
+                    <div class="text-xs font-semibold text-zinc-700 mb-2">Covered matters (Shield Plus+)</div>
+                    <div class="space-y-2 text-xs text-zinc-600 mb-4">
+                        <div class="border rounded-xl p-3 flex gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>Police stops, questioning, traffic &amp; criminal matters</span></div>
+                        <div class="border rounded-xl p-3 flex gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>Consumer disputes, tenancy, employment questions</span></div>
+                        <div class="border rounded-xl p-3 flex gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>Document &amp; contract review (up to 15 pages/mo)</span></div>
+                        <div class="border rounded-xl p-3 flex gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>Trial defence prep consultation (criminal — Shield Pro)</span></div>
+                    </div>
+                    <div class="text-[10px] text-zinc-500 bg-zinc-50 rounded-xl p-3">Emergency video connect still available for active police interactions. Hotline is for general legal questions when not in immediate danger.</div>
+                </div>
+
+                <!-- ASK A LAWYER (JustAnswer) -->
+                <div id="asklawyer-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Ask a Lawyer</div>
+                    </div>
+                    <div class="bg-violet-50 border border-violet-200 rounded-2xl p-3 mb-3 text-[10px] text-violet-900">
+                        Verified Australian lawyers answer general questions by chat — JustAnswer-style. Not tailored legal advice. Uses 1 Ask Credit ($15 value) or included with Shield Plus (5/mo).
+                    </div>
+                    <div class="flex items-center gap-3 border rounded-2xl p-3 mb-3">
+                        <img src="https://i.pravatar.cc/40?img=32" alt="" class="w-10 h-10 rounded-full">
+                        <div class="flex-1 text-xs">
+                            <div class="font-semibold">Michael Torres, LLB</div>
+                            <div class="text-amber-500 text-[10px]"><i class="fa-solid fa-star"></i> 4.8 • Criminal &amp; traffic • 1,204 answers</div>
+                        </div>
+                        <span class="text-[10px] text-emerald-600 font-medium">Online</span>
+                    </div>
+                    <div id="asklawyer-chat" class="space-y-3 mb-3 max-h-48 overflow-y-auto border rounded-2xl p-3 bg-zinc-50">
+                        <div class="chat-bubble-expert text-xs p-3 max-w-[85%]">Hi Lewis — ask a general legal question. I'll point you to options and when you may need a full consult. What can I help with?</div>
+                    </div>
+                    <div class="flex gap-2 mb-3">
+                        <input type="text" id="asklawyer-input" placeholder="e.g. Can police search my car without a warrant?" class="flex-1 border rounded-xl px-3 py-2.5 text-sm" onkeydown="if(event.key==='Enter')sendAskLawyer()">
+                        <button onclick="sendAskLawyer()" class="px-4 bg-violet-700 text-white rounded-xl text-sm font-semibold">Ask</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-[10px]">
+                        <button onclick="quickAsk('Can I refuse a police search?')" class="border rounded-xl p-2 text-left hover:bg-zinc-50">Search rights</button>
+                        <button onclick="quickAsk('What if I fail a saliva test?')" class="border rounded-xl p-2 text-left hover:bg-zinc-50">Drug driving</button>
+                        <button onclick="quickAsk('How do I complain about police?')" class="border rounded-xl p-2 text-left hover:bg-zinc-50">Complaints</button>
+                        <button onclick="showSection('category-section')" class="border border-red-200 bg-red-50 rounded-xl p-2 text-left text-red-800 font-medium">Need lawyer now →</button>
+                    </div>
+                </div>
+
+                <!-- LEGAL TEMPLATES + E-SIGN (Rocket Lawyer / LegalZoom) -->
+                <div id="templates-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Legal Templates</div>
+                    </div>
+                    <div class="flex gap-2 mb-4 text-xs">
+                        <button onclick="setTemplateTab('library')" id="tab-library" class="flex-1 py-2 rounded-xl font-semibold bg-blue-800 text-white">Library</button>
+                        <button onclick="setTemplateTab('review')" id="tab-review" class="flex-1 py-2 rounded-xl font-semibold bg-zinc-100 text-zinc-600">Doc Review</button>
+                        <button onclick="setTemplateTab('esign')" id="tab-esign" class="flex-1 py-2 rounded-xl font-semibold bg-zinc-100 text-zinc-600">E-Sign</button>
+                    </div>
+                    <div id="template-library" class="space-y-2">
+                        <button onclick="openTemplate('stat-dec')" class="w-full border rounded-2xl p-4 text-left text-sm hover:border-blue-300">
+                            <div class="font-semibold">Statutory Declaration (QLD)</div>
+                            <div class="text-xs text-zinc-500">Witnessed statement for courts &amp; agencies</div>
+                        </button>
+                        <button onclick="openTemplate('character-ref')" class="w-full border rounded-2xl p-4 text-left text-sm hover:border-blue-300">
+                            <div class="font-semibold">Character Reference Letter</div>
+                            <div class="text-xs text-zinc-500">Court, employment, tenancy</div>
+                        </button>
+                        <button onclick="openTemplate('complaint-letter')" class="w-full border rounded-2xl p-4 text-left text-sm hover:border-blue-300">
+                            <div class="font-semibold">Police Complaint Letter</div>
+                            <div class="text-xs text-zinc-500">QPS Ethical Standards template</div>
+                        </button>
+                        <button onclick="openTemplate('tenancy-notice')" class="w-full border rounded-2xl p-4 text-left text-sm hover:border-blue-300">
+                            <div class="font-semibold">Tenancy Notice to Leave</div>
+                            <div class="text-xs text-zinc-500">QLD RTA Form 12 style (demo)</div>
+                        </button>
+                        <button onclick="openTemplate('employment')" class="w-full border rounded-2xl p-4 text-left text-sm hover:border-blue-300">
+                            <div class="font-semibold">Casual Employment Agreement</div>
+                            <div class="text-xs text-zinc-500">Small business • Fair Work aligned</div>
+                        </button>
+                        <button onclick="openTemplate('will-starter')" class="w-full border rounded-2xl p-4 text-left text-sm hover:border-blue-300">
+                            <div class="font-semibold">Simple Will Starter Kit</div>
+                            <div class="text-xs text-zinc-500">Estate planning — lawyer review recommended</div>
+                        </button>
+                    </div>
+                    <div id="template-review" class="hidden">
+                        <div class="border-2 border-dashed border-zinc-300 rounded-2xl p-6 text-center mb-3">
+                            <i class="fa-solid fa-cloud-arrow-up text-2xl text-zinc-400 mb-2"></i>
+                            <div class="text-sm font-semibold">Upload for lawyer review</div>
+                            <div class="text-xs text-zinc-500 mt-1">Contracts, leases, letters — up to 15 pages/mo on Shield Plus</div>
+                            <input type="file" id="review-file" class="mt-3 text-xs w-full" accept=".pdf,.doc,.docx">
+                        </div>
+                        <button onclick="submitDocReview()" class="w-full py-3 bg-blue-800 text-white rounded-2xl text-sm font-semibold">Submit for Review (2–3 business days)</button>
+                    </div>
+                    <div id="template-esign" class="hidden">
+                        <div class="bg-zinc-50 border rounded-2xl p-4 text-xs mb-3" id="esign-preview">
+                            <div class="font-semibold mb-2">No document selected</div>
+                            <p class="text-zinc-500">Choose a template from the Library, then e-sign here — Rocket Lawyer-style.</p>
+                        </div>
+                        <label class="block text-xs font-medium text-zinc-500 mb-1">Your full name</label>
+                        <input type="text" id="esign-name" value="Lewis Mitchell" class="w-full border rounded-xl px-3 py-2 text-sm mb-3">
+                        <button onclick="completeEsign()" class="w-full py-3 bg-emerald-600 text-white rounded-2xl text-sm font-semibold"><i class="fa-solid fa-pen-nib mr-2"></i>Apply E-Signature (demo)</button>
+                    </div>
+                </div>
+
+                <!-- ATTORNEY LETTERS & CALLS (LegalShield) -->
+                <div id="attorney-action-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Letters &amp; Calls For You</div>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-3 mb-4 text-[10px] text-blue-900">
+                        Your panel lawyer can send letters or make calls on your behalf for covered matters — a core LegalShield membership benefit. Unlimited on Shield Plus+.
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-xs font-medium text-zinc-500">Request type</label>
+                            <select id="action-type" class="w-full border rounded-xl px-3 py-2.5 text-sm mt-1">
+                                <option>Demand letter (debt / dispute)</option>
+                                <option>Cease &amp; desist letter</option>
+                                <option>Tenancy / neighbour dispute letter</option>
+                                <option>Call to employer (employment matter)</option>
+                                <option>Call to insurer / agency</option>
+                                <option>Police follow-up correspondence</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-zinc-500">Who is this directed to?</label>
+                            <input type="text" id="action-target" placeholder="Name, company, or agency" class="w-full border rounded-xl px-3 py-2.5 text-sm mt-1">
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-zinc-500">Brief description</label>
+                            <textarea id="action-details" rows="3" class="w-full border rounded-xl px-3 py-2.5 text-sm mt-1" placeholder="Facts only — your lawyer will draft the communication"></textarea>
+                        </div>
+                        <button onclick="submitAttorneyAction()" class="w-full py-3.5 bg-blue-800 text-white rounded-2xl font-semibold text-sm">Request Lawyer Action</button>
+                    </div>
+                    <div id="action-history" class="mt-4 space-y-2 text-xs"></div>
+                </div>
+
+                <!-- BUSINESS LEGAL (LegalZoom) -->
+                <div id="business-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('home-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Business Legal</div>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-4 text-[10px] text-amber-900">
+                        LegalZoom-style business tools for Australian small business — templates, registrations guidance, and lawyer consults. Shield Pro includes 2 business consults/mo.
+                    </div>
+                    <div class="space-y-2">
+                        <button onclick="openBusinessTool('abn')" class="w-full border rounded-2xl p-4 text-left flex items-center gap-3">
+                            <i class="fa-solid fa-building text-amber-700 text-lg w-6"></i>
+                            <div><div class="font-semibold text-sm">ABN &amp; Business Name</div><div class="text-xs text-zinc-500">ASIC / ABR registration guide</div></div>
+                        </button>
+                        <button onclick="openBusinessTool('company')" class="w-full border rounded-2xl p-4 text-left flex items-center gap-3">
+                            <i class="fa-solid fa-landmark text-amber-700 text-lg w-6"></i>
+                            <div><div class="font-semibold text-sm">Pty Ltd Formation</div><div class="text-xs text-zinc-500">Constitution, shareholders, ASIC forms</div></div>
+                        </button>
+                        <button onclick="openTemplate('employment')" class="w-full border rounded-2xl p-4 text-left flex items-center gap-3">
+                            <i class="fa-solid fa-user-tie text-amber-700 text-lg w-6"></i>
+                            <div><div class="font-semibold text-sm">Employment Contracts</div><div class="text-xs text-zinc-500">Casual, part-time, contractor agreements</div></div>
+                        </button>
+                        <button onclick="openBusinessTool('trademark')" class="w-full border rounded-2xl p-4 text-left flex items-center gap-3">
+                            <i class="fa-solid fa-trademark text-amber-700 text-lg w-6"></i>
+                            <div><div class="font-semibold text-sm">Trademark (IP Australia)</div><div class="text-xs text-zinc-500">Search &amp; application checklist</div></div>
+                        </button>
+                        <button onclick="openBusinessTool('consult')" class="w-full border rounded-2xl p-4 text-left flex items-center gap-3 border-blue-200 bg-blue-50">
+                            <i class="fa-solid fa-video text-blue-700 text-lg w-6"></i>
+                            <div><div class="font-semibold text-sm">Book Business Lawyer Call</div><div class="text-xs text-zinc-500">30 min consult — uses Shield Credit</div></div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- IDENTITY PROTECTION (LegalShield) -->
+                <div id="identity-section" class="section">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <button onclick="showSection('wallet-section')" class="text-zinc-400"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="font-semibold text-lg">Identity Shield</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-5 text-white mb-4">
+                        <div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-fingerprint"></i><span class="font-semibold">Monitoring active</span></div>
+                        <div class="text-2xl font-semibold">Protected</div>
+                        <div class="text-xs opacity-80 mt-1">LegalShield-style identity theft add-on — $9/mo with Shield Plus</div>
+                    </div>
+                    <div class="space-y-2 text-xs">
+                        <div class="border rounded-xl p-3 flex justify-between"><span>Dark web scan</span><span class="text-emerald-600 font-medium">Clear</span></div>
+                        <div class="border rounded-xl p-3 flex justify-between"><span>Credit file alerts</span><span class="text-emerald-600 font-medium">No issues</span></div>
+                        <div class="border rounded-xl p-3 flex justify-between"><span>Document fraud watch</span><span class="text-emerald-600 font-medium">Active</span></div>
+                        <div class="border rounded-xl p-3 flex justify-between"><span>Restoration lawyer access</span><span class="text-blue-700 font-medium">Included</span></div>
+                    </div>
+                    <button onclick="alert('Identity restoration lawyer would be assigned within 24h (demo).')" class="w-full mt-4 py-3 border-2 border-red-200 text-red-700 rounded-2xl text-sm font-semibold">Report Identity Theft</button>
+                </div>
+
                 <!-- WALLET / SUBSCRIPTION -->
                 <div id="wallet-section" class="section">
                     <div class="flex items-center gap-x-3 mb-4">
@@ -999,35 +1242,48 @@
                         </div>
                     </div>
 
-                    <div class="font-semibold text-sm mb-2">Subscription plans (demo)</div>
+                    <div class="font-semibold text-sm mb-2">Membership plans (demo)</div>
+                    <div class="overflow-x-auto mb-4 -mx-1">
+                        <table class="w-full text-[10px] border-collapse min-w-[320px]">
+                            <thead>
+                                <tr class="text-left text-zinc-500">
+                                    <th class="p-2">Feature</th>
+                                    <th class="p-2 text-center">Basic</th>
+                                    <th class="p-2 text-center bg-emerald-50 rounded-t-lg">Plus ✓</th>
+                                    <th class="p-2 text-center">Family</th>
+                                    <th class="p-2 text-center">Pro</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-zinc-700">
+                                <tr class="border-t"><td class="p-2">Monthly credit</td><td class="text-center">$25</td><td class="text-center bg-emerald-50/50">$45</td><td class="text-center">$70</td><td class="text-center">$90</td></tr>
+                                <tr class="border-t"><td class="p-2">24/7 hotline</td><td class="text-center plan-dash">—</td><td class="text-center bg-emerald-50/50 plan-check">✓</td><td class="text-center plan-check">✓</td><td class="text-center plan-check">✓</td></tr>
+                                <tr class="border-t"><td class="p-2">Ask a Lawyer (chat)</td><td class="text-center">2/mo</td><td class="text-center bg-emerald-50/50">5/mo</td><td class="text-center">10/mo</td><td class="text-center">∞</td></tr>
+                                <tr class="border-t"><td class="p-2">Legal templates</td><td class="text-center">3</td><td class="text-center bg-emerald-50/50">∞</td><td class="text-center plan-check">✓</td><td class="text-center plan-check">✓</td></tr>
+                                <tr class="border-t"><td class="p-2">E-sign documents</td><td class="text-center plan-dash">—</td><td class="text-center bg-emerald-50/50 plan-check">✓</td><td class="text-center plan-check">✓</td><td class="text-center plan-check">✓</td></tr>
+                                <tr class="border-t"><td class="p-2">Doc review (pages)</td><td class="text-center plan-dash">—</td><td class="text-center bg-emerald-50/50">15/mo</td><td class="text-center">30/mo</td><td class="text-center">∞</td></tr>
+                                <tr class="border-t"><td class="p-2">Lawyer letters/calls</td><td class="text-center plan-dash">—</td><td class="text-center bg-emerald-50/50 plan-check">✓</td><td class="text-center plan-check">✓</td><td class="text-center plan-check">✓</td></tr>
+                                <tr class="border-t"><td class="p-2">Trial defence consult</td><td class="text-center plan-dash">—</td><td class="text-center bg-emerald-50/50 plan-dash">—</td><td class="text-center plan-dash">—</td><td class="text-center plan-check">✓</td></tr>
+                                <tr class="border-t"><td class="p-2">Business legal</td><td class="text-center plan-dash">—</td><td class="text-center bg-emerald-50/50 plan-dash">—</td><td class="text-center">1/mo</td><td class="text-center">2/mo</td></tr>
+                                <tr class="border-t"><td class="p-2">Identity Shield</td><td class="text-center">+$9</td><td class="text-center bg-emerald-50/50">+$9</td><td class="text-center">Incl.</td><td class="text-center">Incl.</td></tr>
+                                <tr class="border-t"><td class="p-2">Emergency video</td><td class="text-center plan-check">✓</td><td class="text-center bg-emerald-50/50 plan-check">✓</td><td class="text-center plan-check">✓</td><td class="text-center">Priority</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="space-y-2 mb-4">
-                        <div class="border rounded-2xl p-4 opacity-60">
-                            <div class="flex justify-between items-center">
-                                <div><div class="font-semibold text-sm">Shield Basic</div><div class="text-xs text-zinc-500">$29/mo → $25 credit • Individual</div></div>
-                            </div>
-                        </div>
                         <div class="border-2 border-emerald-500 bg-emerald-50 rounded-2xl p-4">
                             <div class="flex justify-between items-center">
-                                <div><div class="font-semibold text-sm">Shield Plus</div><div class="text-xs text-zinc-600">$49/mo → $45 credit • Individual</div></div>
+                                <div><div class="font-semibold text-sm">Shield Plus</div><div class="text-xs text-zinc-600">$49/mo — LegalShield + Rocket Lawyer essentials</div></div>
                                 <span class="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full">Active</span>
                             </div>
                         </div>
-                        <div class="border-2 border-blue-500 bg-blue-50 rounded-2xl p-4">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <div class="font-semibold text-sm">Shield Family</div>
-                                    <div class="text-xs text-zinc-600">$79/mo → $70 shared credit • Up to 5 members</div>
-                                </div>
-                                <button onclick="showSection('family-section')" class="text-xs text-blue-700 font-medium">Manage</button>
-                            </div>
-                            <div class="text-[10px] text-zinc-500 mt-2">Sub-accounts, shared credit pool, per-member glovebox &amp; emergency contacts.</div>
-                        </div>
-                        <div class="border rounded-2xl p-4">
-                            <div class="flex justify-between items-center">
-                                <div><div class="font-semibold text-sm">Shield Pro</div><div class="text-xs text-zinc-500">$99/mo → $90 credit + priority</div></div>
-                                <button onclick="alert('Upgrade flow (demo)')" class="text-xs text-blue-700 font-medium">Upgrade</button>
-                            </div>
-                        </div>
+                        <button onclick="showSection('identity-section')" class="w-full border rounded-2xl p-4 text-left flex items-center justify-between text-sm">
+                            <span><i class="fa-solid fa-fingerprint text-slate-700 mr-2"></i> Identity Shield add-on</span>
+                            <span class="text-xs text-emerald-600 font-medium">Active</span>
+                        </button>
+                        <button onclick="showSection('family-section')" class="w-full border-2 border-blue-200 bg-blue-50 rounded-2xl p-4 text-left text-sm">
+                            <div class="font-semibold">Upgrade to Shield Family — $79/mo</div>
+                            <div class="text-xs text-zinc-600 mt-1">5 members, shared credit, LegalZoom business consult</div>
+                        </button>
                     </div>
 
                     <div class="border rounded-2xl p-4 text-xs text-zinc-600 mb-4">
@@ -1042,6 +1298,26 @@
                 <div id="more-section" class="section">
                     <div class="font-semibold text-lg mb-4">More</div>
                     <div class="space-y-2">
+                        <button onclick="showSection('hotline-section')" class="w-full border rounded-2xl p-4 text-left flex items-center justify-between text-sm">
+                            <span><i class="fa-solid fa-headset text-indigo-700 mr-2"></i> 24/7 Legal Hotline</span>
+                            <span class="text-[10px] text-emerald-600 font-medium">Included</span>
+                        </button>
+                        <button onclick="showSection('asklawyer-section')" class="w-full border rounded-2xl p-4 text-left flex items-center justify-between text-sm">
+                            <span><i class="fa-solid fa-comments text-violet-600 mr-2"></i> Ask a Lawyer</span>
+                            <span class="text-xs text-zinc-400">3 credits left</span>
+                        </button>
+                        <button onclick="showSection('templates-section')" class="w-full border rounded-2xl p-4 text-left flex items-center justify-between text-sm">
+                            <span><i class="fa-solid fa-file-signature text-blue-700 mr-2"></i> Legal Templates &amp; E-Sign</span>
+                            <i class="fa-solid fa-chevron-right text-zinc-300"></i>
+                        </button>
+                        <button onclick="showSection('attorney-action-section')" class="w-full border rounded-2xl p-4 text-left flex items-center justify-between text-sm">
+                            <span><i class="fa-solid fa-envelope-open-text text-blue-700 mr-2"></i> Letters &amp; Calls For You</span>
+                            <i class="fa-solid fa-chevron-right text-zinc-300"></i>
+                        </button>
+                        <button onclick="showSection('business-section')" class="w-full border rounded-2xl p-4 text-left flex items-center justify-between text-sm">
+                            <span><i class="fa-solid fa-briefcase text-amber-700 mr-2"></i> Business Legal</span>
+                            <i class="fa-solid fa-chevron-right text-zinc-300"></i>
+                        </button>
                         <button onclick="showSection('wallet-section')" class="w-full border rounded-2xl p-4 text-left flex items-center justify-between text-sm">
                             <span><i class="fa-solid fa-wallet text-emerald-700 mr-2"></i> Shield Credit &amp; Plans</span>
                             <span class="text-xs text-emerald-600 font-medium" id="more-wallet-balance">$149.00</span>
@@ -1092,8 +1368,8 @@
                 <button onclick="navTo('home-section', this)" class="nav-btn active flex flex-col items-center px-3 text-zinc-500">
                     <i class="fa-solid fa-home text-lg mb-0.5"></i><span class="text-[10px]">Home</span>
                 </button>
-                <button onclick="navTo('rights-section', this)" class="nav-btn flex flex-col items-center px-3 text-zinc-500">
-                    <i class="fa-solid fa-balance-scale text-lg mb-0.5"></i><span class="text-[10px]">Rights</span>
+                <button onclick="navTo('asklawyer-section', this)" class="nav-btn flex flex-col items-center px-3 text-zinc-500">
+                    <i class="fa-solid fa-comments text-lg mb-0.5"></i><span class="text-[10px]">Ask</span>
                 </button>
                 <button onclick="navTo('glovebox-section', this)" class="nav-btn flex flex-col items-center px-3 text-zinc-500">
                     <i class="fa-solid fa-folder-closed text-lg mb-0.5"></i><span class="text-[10px]">Glovebox</span>
@@ -1302,12 +1578,141 @@
             });
         }
 
+        let selectedTemplate = null;
+        const TEMPLATE_NAMES = {
+            'stat-dec': 'Statutory Declaration (QLD)',
+            'character-ref': 'Character Reference Letter',
+            'complaint-letter': 'Police Complaint Letter',
+            'tenancy-notice': 'Tenancy Notice to Leave',
+            'employment': 'Casual Employment Agreement',
+            'will-starter': 'Simple Will Starter Kit'
+        };
+
+        const ASK_RESPONSES = {
+            search: 'In QLD, police may search your vehicle without a warrant if they reasonably suspect stolen goods, weapons, or drugs. You can ask the basis for the search but must not obstruct. Request they note your objection. For your situation, book a full consult.',
+            saliva: 'QLD has zero-tolerance THC in saliva for drivers. A valid prescription is not a defence to drug driving here. Comply with the test, say nothing incriminating, and connect to a lawyer immediately.',
+            complain: 'Document everything factually. QPS Ethical Standards handles conduct complaints; CCC handles serious misconduct. Your ShieldAU complaint letter template can help structure this.',
+            default: 'Thanks for your question. This is general information only — not legal advice for your specific case. Based on what you\'ve asked, I\'d recommend a 15-min consult with our panel or using our Legal Templates. Would you like me to suggest next steps?'
+        };
+
+        function startHotlineCall() {
+            const el = document.getElementById('hotline-status');
+            el.classList.remove('hidden');
+            el.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Connecting to on-call lawyer...';
+            setTimeout(() => {
+                el.innerHTML = '<strong>Connected</strong> — Sarah Chen, duty solicitor (demo).<br>Average wait: 47 seconds. Covered under Shield Plus unlimited consults.';
+            }, 1800);
+        }
+
+        function sendAskLawyer() {
+            const input = document.getElementById('asklawyer-input');
+            const q = input.value.trim();
+            if (!q) return;
+            appendChat('user', q);
+            input.value = '';
+            setTimeout(() => {
+                const lower = q.toLowerCase();
+                let reply = ASK_RESPONSES.default;
+                if (lower.includes('search') || lower.includes('warrant')) reply = ASK_RESPONSES.search;
+                else if (lower.includes('saliva') || lower.includes('drug') || lower.includes('thc')) reply = ASK_RESPONSES.saliva;
+                else if (lower.includes('complain') || lower.includes('police')) reply = ASK_RESPONSES.complain;
+                appendChat('expert', reply);
+            }, 1200);
+        }
+
+        function quickAsk(q) {
+            document.getElementById('asklawyer-input').value = q;
+            sendAskLawyer();
+        }
+
+        function appendChat(role, text) {
+            const chat = document.getElementById('asklawyer-chat');
+            const div = document.createElement('div');
+            div.className = role === 'user' ? 'chat-bubble-user text-xs p-3 max-w-[85%] ml-auto' : 'chat-bubble-expert text-xs p-3 max-w-[85%]';
+            div.textContent = text;
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function setTemplateTab(tab) {
+            ['library', 'review', 'esign'].forEach(t => {
+                document.getElementById('template-' + t).classList.toggle('hidden', t !== tab);
+                const btn = document.getElementById('tab-' + t);
+                if (t === tab) btn.className = 'flex-1 py-2 rounded-xl font-semibold bg-blue-800 text-white';
+                else btn.className = 'flex-1 py-2 rounded-xl font-semibold bg-zinc-100 text-zinc-600';
+            });
+        }
+
+        function openTemplate(id) {
+            selectedTemplate = id;
+            showSection('templates-section');
+            setTemplateTab('esign');
+            document.getElementById('esign-preview').innerHTML = `
+                <div class="font-semibold mb-2">${TEMPLATE_NAMES[id]}</div>
+                <p class="text-zinc-600">Pre-filled with your profile (demo). Review clauses, then apply your e-signature below.</p>
+                <p class="mt-2 text-zinc-500 italic">[Document body — ${TEMPLATE_NAMES[id]} — editable in production]</p>`;
+        }
+
+        function submitDocReview() {
+            const file = document.getElementById('review-file').files[0];
+            if (!file) { alert('Please select a document to upload.'); return; }
+            alert(`"${file.name}" submitted for lawyer review. Estimated turnaround: 2–3 business days. You'll be notified when complete (demo).`);
+        }
+
+        function completeEsign() {
+            if (!selectedTemplate) { alert('Select a template from the Library first.'); return; }
+            const name = document.getElementById('esign-name').value.trim();
+            if (!name) { alert('Enter your full name for the signature.'); return; }
+            alert(`${TEMPLATE_NAMES[selectedTemplate]} signed by ${name}. PDF saved to your Glovebox (demo).`);
+        }
+
+        function submitAttorneyAction() {
+            const type = document.getElementById('action-type').value;
+            const target = document.getElementById('action-target').value.trim();
+            const details = document.getElementById('action-details').value.trim();
+            if (!target || !details) { alert('Please complete all fields.'); return; }
+            const entry = { type, target, details, status: 'Assigned to panel lawyer', date: new Date().toLocaleDateString('en-AU') };
+            const history = JSON.parse(localStorage.getItem('shieldau_actions') || '[]');
+            history.unshift(entry);
+            localStorage.setItem('shieldau_actions', JSON.stringify(history.slice(0, 5)));
+            renderActionHistory();
+            document.getElementById('action-target').value = '';
+            document.getElementById('action-details').value = '';
+            alert('Request submitted. A panel lawyer will contact you within 1 business day to confirm scope (demo).');
+        }
+
+        function renderActionHistory() {
+            const el = document.getElementById('action-history');
+            if (!el) return;
+            const history = JSON.parse(localStorage.getItem('shieldau_actions') || '[]');
+            if (!history.length) { el.innerHTML = ''; return; }
+            el.innerHTML = '<div class="font-semibold text-zinc-700 mb-2">Recent requests</div>' + history.map(h => `
+                <div class="border rounded-xl p-3 bg-zinc-50">
+                    <div class="font-medium">${h.type}</div>
+                    <div class="text-zinc-500">To: ${h.target} • ${h.date}</div>
+                    <div class="text-emerald-700 mt-1">${h.status}</div>
+                </div>`).join('');
+        }
+
+        function openBusinessTool(tool) {
+            const msgs = {
+                abn: 'ABN registration via abr.gov.au. Business name via ASIC Connect. ShieldAU provides step-by-step checklist + lawyer review on Shield Pro.',
+                company: 'Pty Ltd formation: ACN application, constitution, shareholder agreement templates included. Lawyer filing service available.',
+                trademark: 'IP Australia search recommended first. ShieldAU trademark checklist + lawyer consult for classes and objections.',
+                consult: null
+            };
+            if (tool === 'consult') { showSection('category-section'); return; }
+            alert(msgs[tool]);
+        }
+
         function updateNavForSection(sectionId) {
             const map = {
-                'home-section': 0, 'rights-section': 1, 'aboriginal-section': 1,
+                'home-section': 0, 'category-section': 0, 'connect-section': 0, 'call-section': 0,
+                'hotline-section': 0, 'asklawyer-section': 1, 'templates-section': 1,
+                'attorney-action-section': 1, 'business-section': 1, 'rights-section': 1, 'aboriginal-section': 1,
                 'document-section': 2, 'glovebox-section': 2,
                 'more-section': 3, 'wallet-section': 3, 'emergency-section': 3,
-                'family-section': 3, 'terms-section': 3, 'privacy-section': 3
+                'family-section': 3, 'terms-section': 3, 'privacy-section': 3, 'identity-section': 3
             };
             const idx = map[sectionId];
             if (idx !== undefined) {
@@ -1781,6 +2186,7 @@
         renderEmergencyContacts();
         renderEmergencyLog();
         renderFamilyMembers();
+        renderActionHistory();
         updateCounts();
 
         // Live clock

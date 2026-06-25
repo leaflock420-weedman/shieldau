@@ -21,14 +21,17 @@ Australian lawyer-connection platform demo — inspired by Attorney Shield, buil
 
 ## Features
 
-- Instant lawyer video connect (demo UI)
-- Shield Credit subscription billing (15-min block → per-min → hourly)
-- Digital Glovebox (encrypted ID storage demo)
-- Emergency contact SMS + location alerts
-- Family plan / sub-accounts
-- Know Your Rights (QLD, NSW, VIC)
-- Aboriginal Legal Services links (ATSILS, ALS, VALS)
-- Medicinal cannabis module
+- **Emergency video connect** — instant lawyer during police interactions (Attorney Shield core)
+- **24/7 legal hotline** — unlimited consults on covered matters (LegalShield)
+- **Ask a Lawyer** — rated expert chat Q&A (JustAnswer)
+- **Legal templates + e-sign** — stat decs, wills, employment, complaints (Rocket Lawyer / LegalZoom)
+- **Document review** — upload contracts for lawyer review (Rocket Lawyer)
+- **Letters & calls for you** — panel lawyer acts on your behalf (LegalShield)
+- **Business legal** — ABN, Pty Ltd, trademarks, employment (LegalZoom)
+- **Identity Shield** — theft monitoring + restoration lawyer (LegalShield)
+- Shield Credit billing (15-min block → per-min → hourly)
+- Digital Glovebox, emergency SMS alerts, family plan
+- Know Your Rights (QLD, NSW, VIC), ATSILS links, medicinal cannabis module
 
 ## Tests
 
