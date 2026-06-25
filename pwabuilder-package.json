@@ -1,0 +1,54 @@
+{
+  "additionalTrustedOrigins": [],
+  "appVersion": "1.0.0.0",
+  "appVersionCode": 1,
+  "backgroundColor": "#111827",
+  "display": "standalone",
+  "enableNotifications": false,
+  "enableSiteSettingsShortcut": true,
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": true
+    },
+    "playBilling": {
+      "enabled": false
+    }
+  },
+  "host": "https://leaflock420-weedman.github.io",
+  "iconUrl": "https://leaflock420-weedman.github.io/shieldau/icons/icon-512.png",
+  "includeSourceCode": false,
+  "isChromeOSOnly": false,
+  "launcherName": "ShieldAU",
+  "maskableIconUrl": "https://leaflock420-weedman.github.io/shieldau/icons/icon-512.png",
+  "monochromeIconUrl": null,
+  "name": "ShieldAU",
+  "navigationColor": "#1e3a8a",
+  "navigationColorDark": "#111827",
+  "navigationDividerColor": "#1e3a8a",
+  "navigationDividerColorDark": "#111827",
+  "orientation": "portrait",
+  "packageId": "com.shieldau.demo",
+  "serviceAccountJsonFile": null,
+  "shareTarget": null,
+  "shortcuts": [
+    {
+      "name": "Connect to Lawyer",
+      "short_name": "Connect",
+      "url": "/shieldau/index.html",
+      "icons": [
+        {
+          "sizes": "192x192",
+          "src": "https://leaflock420-weedman.github.io/shieldau/icons/icon-192.png"
+        }
+      ]
+    }
+  ],
+  "signing": null,
+  "signingMode": "none",
+  "splashScreenFadeOutDuration": 300,
+  "startUrl": "/shieldau/index.html",
+  "themeColor": "#1e3a8a",
+  "themeColorDark": "#111827",
+  "webManifestUrl": "https://leaflock420-weedman.github.io/shieldau/manifest.json"
+}

@@ -1,27 +1,34 @@
 # ShieldAU → Android APK
 
-## Quick path (already hosted on GitHub Pages)
+## Live site (GitHub Pages)
+
+https://leaflock420-weedman.github.io/shieldau/index.html
+
+## PWABuilder (recommended)
 
 1. Open https://www.pwabuilder.com
 2. Paste: `https://leaflock420-weedman.github.io/shieldau/index.html`
-3. Click **Start** → **Android** tab
+3. Click **Start** → review manifest score → **Package For Stores** → **Android**
 4. App Name: `ShieldAU` | Package: `com.shieldau.demo` | Version: `1.0.0`
 5. **Generate Package** → download APK
 
-## Netlify Drop (alternative)
+## Cloud API (no local Android SDK)
 
-1. Go to https://app.netlify.com/drop
-2. Drag the `docs` folder (not the whole repo)
-3. Copy the Netlify URL → paste into PWABuilder
+Use `pwabuilder-package.json` in this repo and POST to:
 
-## Required files in deploy folder
+`https://pwabuilder-cloudapk.azurewebsites.net/generateAppPackage`
+
+## Required files in `docs/` deploy folder
 
 - `index.html`
 - `manifest.json`
-- `sw.js` (service worker for PWA)
+- `sw.js`
+- `icons/` (48–512 px, sizes must match manifest)
+- `screenshots/` (narrow + wide)
 
 ## Install on Android
 
-1. Copy `.apk` to phone
-2. Enable **Install unknown apps** for your file manager
-3. Tap APK to install
+1. Download `ShieldAU.apk` from [Releases](https://github.com/leaflock420-weedman/shieldau/releases)
+2. Copy to phone (USB, email, or cloud)
+3. Enable **Install unknown apps** for your file manager
+4. Tap APK to install

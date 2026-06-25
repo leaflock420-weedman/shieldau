@@ -4,3 +4,6 @@ Thumbs.db
 *.zip
 .env
 .env.*
+apk-output/
+docs/.netlify/
+ShieldAU-package.zip

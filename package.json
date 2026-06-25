@@ -13,5 +13,8 @@
   "dependencies": {
     "docx": "^9.7.1",
     "pptxgenjs": "^4.0.1"
+  },
+  "devDependencies": {
+    "@bubblewrap/cli": "^1.24.1"
   }
 }

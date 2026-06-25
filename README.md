@@ -43,7 +43,11 @@ Or use the included `render.yaml` with Render Blueprint.
 
 ### GitHub Pages
 
-Settings → Pages → Source: Deploy from branch `main` → folder `/ (root)`.
+Settings → Pages → Source: Deploy from branch `main` → folder `/docs`.
+
+### Android APK
+
+Download from [Releases](https://github.com/leaflock420-weedman/shieldau/releases) or build via [APK-BUILD.md](APK-BUILD.md).
 
 ## Disclaimer
 
