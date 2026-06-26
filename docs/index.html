@@ -115,6 +115,22 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
+        .camera-feed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #18181b;
+        }
+
+        .lawyer-overlay {
+            position: relative;
+            z-index: 10;
+        }
+
+        .rec-pill-active { background: rgba(220, 38, 38, 0.9); color: white; }
+        .rec-pill-warn { background: rgba(245, 158,  11, 0.9); color: white; }
+        .rec-pill-off { background: rgba(63, 63, 70, 0.8); color: #d4d4d8; }
+
         .video-scanline {
             background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px);
             pointer-events: none;
@@ -641,30 +657,46 @@
                             <i class="fa-solid fa-shield-halved"></i>
                             <span>Arrest Protection — session &amp; recording continue</span>
                         </div>
-                        <div class="mt-1 opacity-90" id="arrest-protection-text">Lawyer stays on and camera keeps rolling after arrest to protect your rights. Evidence saved to your vault — independent of police body-cam footage.</div>
+                        <div class="mt-1 opacity-90" id="arrest-protection-text">Lawyer stays on. Front cam, back cam, and mic keep recording after arrest. Evidence saved to your vault — independent of police body-cam footage.</div>
                     </div>
 
-                    <div class="video-stage mb-3">
-                        <div class="absolute inset-0 flex flex-col items-center justify-center text-white z-10">
-                            <img src="https://i.pravatar.cc/200?img=28" alt="" class="w-24 h-24 rounded-full border-4 border-emerald-500 object-cover mb-3 shadow-lg">
-                            <div class="font-semibold text-lg">Dr. Priya Sharma</div>
+                    <div class="video-stage mb-2">
+                        <video id="back-camera-video" class="camera-feed absolute inset-0 z-0" autoplay playsinline muted></video>
+                        <div id="back-camera-fallback" class="absolute inset-0 z-0 bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 text-[10px] px-6 text-center">
+                            <i class="fa-solid fa-camera text-2xl mb-2 opacity-50"></i>
+                            Back camera starting…
+                        </div>
+                        <div class="lawyer-overlay absolute inset-0 flex flex-col items-center justify-center text-white pointer-events-none">
+                            <img src="https://i.pravatar.cc/200?img=28" alt="" class="w-20 h-20 rounded-full border-4 border-emerald-500 object-cover mb-2 shadow-lg bg-zinc-800">
+                            <div class="font-semibold text-base">Dr. Priya Sharma</div>
                             <div class="text-xs text-emerald-300 mt-1 flex items-center gap-2">
                                 <span class="w-2 h-2 bg-red-500 rounded-full rec-dot"></span>
                                 LIVE • <span id="call-timer">00:00</span>
                             </div>
-                            <div class="text-[10px] text-zinc-400 mt-2 px-6 text-center">Position device so officer can see your lawyer on screen (demo)</div>
+                            <div class="text-[10px] text-zinc-300 mt-2 px-6 text-center bg-black/40 rounded-lg py-1">Back cam captures the scene • front cam captures you • mic records audio</div>
                         </div>
-                        <div class="video-scanline absolute inset-0 z-20"></div>
+                        <div class="video-scanline absolute inset-0 z-20 pointer-events-none"></div>
+                        <div id="back-rec-label" class="absolute bottom-3 left-3 z-30 text-[8px] bg-red-600/90 text-white px-1.5 py-0.5 rounded font-semibold hidden"><i class="fa-solid fa-circle text-[5px] mr-0.5 rec-dot"></i>REAR REC</div>
                         <div class="video-pip z-30">
-                            <div class="w-full h-full bg-zinc-800 flex flex-col items-center justify-center text-white">
-                                <i class="fa-solid fa-user text-2xl text-zinc-500 mb-1"></i>
-                                <span class="text-[9px] text-zinc-400">You</span>
-                            </div>
+                            <video id="front-camera-video" class="camera-feed" autoplay playsinline muted></video>
+                            <div id="front-pip-label" class="absolute bottom-1 left-1 text-[8px] bg-red-600/90 text-white px-1.5 py-0.5 rounded font-semibold"><i class="fa-solid fa-circle text-[5px] mr-0.5 rec-dot"></i>FRONT REC</div>
                         </div>
                         <div class="absolute top-3 left-3 z-30 flex flex-wrap gap-2">
                             <span class="text-[9px] bg-black/50 text-white px-2 py-1 rounded-full"><i class="fa-solid fa-lock mr-1"></i>Agora E2E</span>
-                            <span class="text-[9px] bg-emerald-600/80 text-white px-2 py-1 rounded-full" id="pip-badge">PiP ready</span>
+                            <span class="text-[9px] bg-emerald-600/80 text-white px-2 py-1 rounded-full" id="pip-badge">Dual cam</span>
                             <span class="text-[9px] bg-red-600/90 text-white px-2 py-1 rounded-full hidden" id="evidence-rec-badge"><i class="fa-solid fa-circle text-[6px] mr-1 rec-dot"></i>Evidence Shield REC</span>
+                        </div>
+                    </div>
+
+                    <div id="recording-status-bar" class="grid grid-cols-3 gap-2 mb-3 text-[10px]">
+                        <div id="front-rec-pill" class="rec-pill-warn rounded-xl px-2 py-1.5 flex items-center justify-center gap-1 font-semibold">
+                            <i class="fa-solid fa-camera"></i> Front <span id="front-rec-status">…</span>
+                        </div>
+                        <div id="back-rec-pill" class="rec-pill-warn rounded-xl px-2 py-1.5 flex items-center justify-center gap-1 font-semibold">
+                            <i class="fa-solid fa-camera-rotate"></i> Back <span id="back-rec-status">…</span>
+                        </div>
+                        <div id="mic-rec-pill" class="rec-pill-warn rounded-xl px-2 py-1.5 flex items-center justify-center gap-1 font-semibold">
+                            <i class="fa-solid fa-microphone"></i> Mic <span id="mic-rec-status">…</span>
                         </div>
                     </div>
 
@@ -685,11 +717,11 @@
                     </div>
 
                     <div class="grid grid-cols-5 gap-2 mb-3">
-                        <button onclick="toggleMute()" id="mute-btn" class="py-2.5 bg-zinc-100 rounded-xl text-[10px] font-medium flex flex-col items-center gap-1">
-                            <i class="fa-solid fa-microphone text-sm"></i> Mute
+                        <button onclick="toggleLawyerMute()" id="mute-btn" class="py-2.5 bg-zinc-100 rounded-xl text-[10px] font-medium flex flex-col items-center gap-1" title="Mutes lawyer live feed — mic keeps recording">
+                            <i class="fa-solid fa-microphone text-sm"></i> Lawyer
                         </button>
-                        <button onclick="toggleCamera()" id="camera-btn" class="py-2.5 bg-zinc-100 rounded-xl text-[10px] font-medium flex flex-col items-center gap-1">
-                            <i class="fa-solid fa-video text-sm"></i> Cam
+                        <button onclick="toggleLawyerPreview()" id="camera-btn" class="py-2.5 bg-zinc-100 rounded-xl text-[10px] font-medium flex flex-col items-center gap-1" title="Hides your preview — cameras keep recording">
+                            <i class="fa-solid fa-video text-sm"></i> Preview
                         </button>
                         <button onclick="showGloveboxInCall()" class="py-2.5 bg-blue-100 text-blue-800 rounded-xl text-[10px] font-medium flex flex-col items-center gap-1">
                             <i class="fa-solid fa-id-card text-sm"></i> ID
@@ -705,7 +737,7 @@
                     <button onclick="showPinModal()" class="w-full py-3.5 bg-red-600 text-white rounded-2xl font-semibold flex items-center justify-center gap-x-2 text-sm">
                         <i class="fa-solid fa-lock"></i> End Session (PIN required)
                     </button>
-                    <div class="text-[10px] text-center text-zinc-400 mt-2" id="call-recording-footnote">Evidence Shield auto-records emergency sessions. Stays on after arrest until your lawyer ends the call (demo).</div>
+                    <div class="text-[10px] text-center text-zinc-400 mt-2" id="call-recording-footnote">Evidence Shield records <strong>front camera</strong>, <strong>back camera</strong>, and <strong>microphone</strong> together. Recording cannot be stopped during a session — only the lawyer live feed can be muted (demo).</div>
                 </div>
 
                 <!-- POST-CALL -->
@@ -729,7 +761,9 @@
                                 <span id="postcall-total">—</span>
                             </div>
                             <div class="text-[10px] text-zinc-500 mt-1">Remaining balance: <span id="postcall-remaining" class="font-medium">—</span></div>
-                            <div class="text-[10px] text-amber-700 mt-2 hidden" id="postcall-recording-note"><i class="fa-solid fa-shield-halved mr-1"></i>Evidence Shield recording saved to Legal Vault.</div>
+                            <div class="text-[10px] text-amber-700 mt-2 hidden" id="postcall-recording-note">
+                                <i class="fa-solid fa-shield-halved mr-1"></i><span id="postcall-recording-detail">Evidence Shield saved to Legal Vault.</span>
+                            </div>
                         </div>
                     </div>
 
@@ -1131,7 +1165,7 @@
                         <p><strong>Compliance.</strong> We comply with the Privacy Act 1988 (Cth) and Australian Privacy Principles (APPs).</p>
                         <p><strong>Data collected.</strong> Account details, incident notes (with consent), connection logs, and payment information. We collect only what is necessary.</p>
                         <p><strong>Sensitive information.</strong> Legal and health-related data receives heightened protection, explicit consent, encryption at rest and in transit, and Australia-preferred hosting.</p>
-                        <p><strong>Evidence Shield recordings.</strong> Emergency video sessions are recorded and encrypted for your protection — including after arrest — and stored in your Legal Vault. You control access; production requires Australian legal review.</p>
+                        <p><strong>Evidence Shield recordings.</strong> Emergency sessions record <strong>front camera</strong>, <strong>back camera</strong>, and <strong>microphone</strong> simultaneously — including after arrest — encrypted and stored in your Legal Vault. You control access; production requires Australian legal review.</p>
                         <p><strong>Your rights.</strong> Access, correction, and deletion of your data. Contact privacy@shieldau.com.au (demo).</p>
                         <p><strong>Retention.</strong> Notes retained per your settings; deleted on request unless required for legal obligations.</p>
                     </div>
@@ -1963,10 +1997,18 @@
         let callSeconds = 0;
         let walletBalance = 149.00;
         let pinBuffer = '';
-        let isMuted = false;
-        let cameraOn = true;
+        let lawyerMuted = false;
+        let lawyerPreviewOn = true;
         let arrestProtectionActive = false;
         let evidenceRecording = false;
+        let frontStream = null;
+        let backStream = null;
+        let frontRecorder = null;
+        let backRecorder = null;
+        let evidenceChunks = { front: [], back: [] };
+        let frontCamRecording = false;
+        let backCamRecording = false;
+        let micRecording = false;
         const DEMO_PIN = '1234';
         const LAWYER_HOURLY_RATE = 360;
 
@@ -2634,12 +2676,149 @@
             }, 2200);
         }
 
+        function setRecPill(pillId, statusId, active, label) {
+            const pill = document.getElementById(pillId);
+            const status = document.getElementById(statusId);
+            if (status) status.textContent = label || (active ? 'REC' : 'Off');
+            if (pill) {
+                pill.classList.remove('rec-pill-active', 'rec-pill-warn', 'rec-pill-off');
+                pill.classList.add(active ? 'rec-pill-active' : 'rec-pill-off');
+            }
+        }
+
+        function updateRecordingIndicators() {
+            setRecPill('front-rec-pill', 'front-rec-status', frontCamRecording, frontCamRecording ? 'REC' : 'Off');
+            setRecPill('back-rec-pill', 'back-rec-status', backCamRecording, backCamRecording ? 'REC' : 'Off');
+            setRecPill('mic-rec-pill', 'mic-rec-status', micRecording, micRecording ? 'REC' : 'Off');
+            document.getElementById('back-rec-label')?.classList.toggle('hidden', !backCamRecording);
+            document.getElementById('front-pip-label')?.classList.toggle('hidden', !frontCamRecording);
+            const badge = document.getElementById('evidence-rec-badge');
+            if (badge) badge.classList.toggle('hidden', !(frontCamRecording || backCamRecording || micRecording));
+        }
+
+        function startMediaRecorder(stream, key) {
+            if (!stream || typeof MediaRecorder === 'undefined') return null;
+            const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+                ? 'video/webm;codecs=vp9,opus'
+                : (MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : '');
+            if (!mime) return null;
+            const recorder = new MediaRecorder(stream, { mimeType: mime });
+            recorder.ondataavailable = (e) => { if (e.data && e.data.size) evidenceChunks[key].push(e.data); };
+            recorder.start(1000);
+            return recorder;
+        }
+
+        async function startEvidenceCapture() {
+            evidenceChunks = { front: [], back: [] };
+            frontCamRecording = false;
+            backCamRecording = false;
+            micRecording = false;
+            updateRecordingIndicators();
+
+            if (!navigator.mediaDevices?.getUserMedia) {
+                setRecPill('front-rec-pill', 'front-rec-status', false, 'N/A');
+                setRecPill('back-rec-pill', 'back-rec-status', false, 'N/A');
+                setRecPill('mic-rec-pill', 'mic-rec-status', false, 'N/A');
+                return;
+            }
+
+            try {
+                frontStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: 'user' }, width: { ideal: 640 }, height: { ideal: 480 } },
+                    audio: { echoCancellation: true, noiseSuppression: true }
+                });
+                const frontVideo = document.getElementById('front-camera-video');
+                if (frontVideo) {
+                    frontVideo.srcObject = frontStream;
+                    await frontVideo.play().catch(() => {});
+                }
+                frontCamRecording = frontStream.getVideoTracks().some(t => t.readyState === 'live');
+                micRecording = frontStream.getAudioTracks().some(t => t.readyState === 'live' && t.enabled);
+                frontRecorder = startMediaRecorder(frontStream, 'front');
+            } catch (err) {
+                console.warn('Front camera / mic:', err);
+            }
+
+            try {
+                backStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+                    audio: false
+                });
+                const backVideo = document.getElementById('back-camera-video');
+                const fallback = document.getElementById('back-camera-fallback');
+                if (backVideo) {
+                    backVideo.srcObject = backStream;
+                    await backVideo.play().catch(() => {});
+                    backVideo.classList.remove('hidden');
+                }
+                if (fallback) fallback.classList.add('hidden');
+                backCamRecording = backStream.getVideoTracks().some(t => t.readyState === 'live');
+                backRecorder = startMediaRecorder(backStream, 'back');
+            } catch (err) {
+                console.warn('Back camera:', err);
+                const fallback = document.getElementById('back-camera-fallback');
+                if (fallback) {
+                    fallback.innerHTML = '<i class="fa-solid fa-camera text-2xl mb-2 opacity-50"></i>Rear camera unavailable on this device — front cam + mic still recording';
+                }
+            }
+
+            evidenceRecording = frontCamRecording || backCamRecording || micRecording;
+            updateRecordingIndicators();
+        }
+
+        function stopEvidenceCapture() {
+            [frontRecorder, backRecorder].forEach((rec) => {
+                if (rec && rec.state !== 'inactive') {
+                    try { rec.stop(); } catch {}
+                }
+            });
+            frontRecorder = null;
+            backRecorder = null;
+
+            [frontStream, backStream].forEach((stream) => {
+                if (stream) stream.getTracks().forEach((t) => t.stop());
+            });
+            frontStream = null;
+            backStream = null;
+
+            ['front-camera-video', 'back-camera-video'].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) el.srcObject = null;
+            });
+            document.getElementById('back-camera-fallback')?.classList.remove('hidden');
+        }
+
+        function saveEvidenceToVault(durationLabel) {
+            if (!evidenceRecording && !frontCamRecording && !backCamRecording && !micRecording) return '';
+            const docs = getVaultDocs();
+            const parts = [];
+            if (frontCamRecording || evidenceChunks.front.length) parts.push('front camera');
+            if (backCamRecording || evidenceChunks.back.length) parts.push('back camera');
+            if (micRecording) parts.push('microphone');
+            const summary = parts.length ? parts.join(' + ') : 'session audio/video';
+            docs.unshift({
+                label: `Evidence Shield (${durationLabel})`,
+                folder: 'Evidence Recordings',
+                date: new Date().toLocaleDateString('en-AU'),
+                meta: {
+                    frontCam: frontCamRecording,
+                    backCam: backCamRecording,
+                    mic: micRecording,
+                    frontChunks: evidenceChunks.front.length,
+                    backChunks: evidenceChunks.back.length,
+                    arrest: arrestProtectionActive
+                }
+            });
+            localStorage.setItem('shieldau_vault', JSON.stringify(docs));
+            return summary;
+        }
+
         function simulateCall() {
             showSection('call-section');
             arrestProtectionActive = false;
-            evidenceRecording = true;
+            lawyerMuted = false;
+            lawyerPreviewOn = true;
             document.getElementById('arrest-protection-banner')?.classList.add('hidden');
-            document.getElementById('evidence-rec-badge')?.classList.remove('hidden');
             const arrestBtn = document.getElementById('arrest-btn');
             if (arrestBtn) {
                 arrestBtn.classList.remove('bg-amber-600', 'text-white');
@@ -2653,6 +2832,8 @@
                 callSeconds++;
                 updateCallTimer();
             }, 1000);
+
+            startEvidenceCapture();
 
             const alertOn = document.getElementById('emergency-alert-checkbox')?.checked
                 && document.getElementById('emergency-master-toggle')?.checked;
@@ -2672,25 +2853,30 @@
             }
             document.getElementById('call-advice').textContent =
                 '"You are under arrest — do not resist. Say nothing except your name if required. I am staying on the line and recording continues for your protection. Do not sign anything without me. Evidence is being saved to your vault."';
-            logActivity('Arrest Protection activated — recording continues');
+            updateRecordingIndicators();
+            logActivity('Arrest Protection activated — dual camera + mic recording continues');
         }
 
-        function toggleMute() {
-            isMuted = !isMuted;
+        function toggleLawyerMute() {
+            lawyerMuted = !lawyerMuted;
             const btn = document.getElementById('mute-btn');
-            btn.innerHTML = isMuted
-                ? '<i class="fa-solid fa-microphone-slash text-sm text-red-600"></i> Unmute'
-                : '<i class="fa-solid fa-microphone text-sm"></i> Mute';
-            btn.classList.toggle('bg-red-50', isMuted);
+            btn.innerHTML = lawyerMuted
+                ? '<i class="fa-solid fa-microphone-slash text-sm text-amber-600"></i> Lawyer'
+                : '<i class="fa-solid fa-microphone text-sm"></i> Lawyer';
+            btn.classList.toggle('bg-amber-50', lawyerMuted);
+            setRecPill('mic-rec-pill', 'mic-rec-status', micRecording, micRecording ? 'REC' : 'Off');
         }
 
-        function toggleCamera() {
-            cameraOn = !cameraOn;
+        function toggleLawyerPreview() {
+            lawyerPreviewOn = !lawyerPreviewOn;
             const btn = document.getElementById('camera-btn');
-            btn.innerHTML = cameraOn
-                ? '<i class="fa-solid fa-video text-sm"></i> Cam'
-                : '<i class="fa-solid fa-video-slash text-sm text-red-600"></i> Off';
-            btn.classList.toggle('bg-red-50', !cameraOn);
+            const frontVideo = document.getElementById('front-camera-video');
+            btn.innerHTML = lawyerPreviewOn
+                ? '<i class="fa-solid fa-video text-sm"></i> Preview'
+                : '<i class="fa-solid fa-video-slash text-sm text-amber-600"></i> Preview';
+            btn.classList.toggle('bg-amber-50', !lawyerPreviewOn);
+            if (frontVideo) frontVideo.style.opacity = lawyerPreviewOn ? '1' : '0.15';
+            setRecPill('front-rec-pill', 'front-rec-status', frontCamRecording, frontCamRecording ? 'REC' : 'Off');
         }
 
         function showPinModal() {
@@ -3018,10 +3204,17 @@
             const minutes = callSeconds / 60;
             const mins = Math.floor(callSeconds / 60);
             const secs = callSeconds % 60;
+            const durationLabel = mins > 0 ? `${mins} min ${secs} sec` : `${secs} sec`;
             const { total, breakdown } = calculateCallCost(minutes);
 
-            document.getElementById('postcall-duration').textContent =
-                mins > 0 ? `${mins} min ${secs} sec` : `${secs} sec`;
+            const savedSummary = saveEvidenceToVault(durationLabel);
+            stopEvidenceCapture();
+            frontCamRecording = false;
+            backCamRecording = false;
+            micRecording = false;
+            updateRecordingIndicators();
+
+            document.getElementById('postcall-duration').textContent = durationLabel;
 
             document.getElementById('postcall-billing-breakdown').innerHTML =
                 breakdown.map(b =>
@@ -3033,12 +3226,20 @@
             localStorage.setItem('shieldau_wallet', walletBalance);
             updateWalletDisplays();
             document.getElementById('postcall-remaining').textContent = formatMoney(walletBalance);
+            const hadRecording = savedSummary || evidenceRecording || arrestProtectionActive;
             const postRec = document.getElementById('postcall-recording-note');
-            if (postRec) postRec.classList.toggle('hidden', !(evidenceRecording || arrestProtectionActive));
-            const recNote = evidenceRecording || arrestProtectionActive
-                ? ' Evidence Shield recording saved to Legal Vault' + (arrestProtectionActive ? ' (includes post-arrest footage).' : '.')
+            const postRecDetail = document.getElementById('postcall-recording-detail');
+            if (postRec) postRec.classList.toggle('hidden', !hadRecording);
+            if (postRecDetail && savedSummary) {
+                postRecDetail.textContent = `Evidence Shield saved (${savedSummary}) to Legal Vault` +
+                    (arrestProtectionActive ? ' — includes post-arrest footage.' : '.');
+            }
+            const recNote = hadRecording
+                ? ' Evidence Shield saved (' + (savedSummary || 'recording') + ') to Legal Vault' +
+                  (arrestProtectionActive ? ' (post-arrest).' : '.')
                 : '';
             logActivity('Video call ended — ' + formatMoney(total) + ' deducted' + recNote);
+            renderVault();
             renderDashboard();
             showSection('postcall-section');
         }

@@ -136,6 +136,14 @@ const required = [
   'Arrest Protection',
   'Evidence Shield REC',
   'function activateArrestProtection',
+  'function startEvidenceCapture',
+  'id="front-camera-video"',
+  'id="back-camera-video"',
+  'id="recording-status-bar"',
+  'function toggleLawyerMute',
+  'front camera',
+  'back camera',
+  'microphone',
 ];
 required.forEach(id => assert(html.includes(id), `Contains: ${id}`));
 
