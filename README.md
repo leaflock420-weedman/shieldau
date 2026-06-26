@@ -57,7 +57,7 @@ node test-shieldau.js
 3. Client app: https://shieldau.onrender.com → start video session
 4. Lawyer joins same channel: https://shieldau.onrender.com/lawyer.html?channel=CHANNEL_ID
 
-Evidence Shield (dual camera + mic) runs locally; Agora carries live lawyer ↔ client video.
+Evidence Shield starts **front camera, back camera, and mic** as soon as you connect — streaming encrypted chunks to the ShieldAU server (`/api/evidence/*`) while matching. Agora carries live lawyer ↔ client video.
 
 ## Deploy on Render
 

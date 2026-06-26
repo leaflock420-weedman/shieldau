@@ -146,6 +146,11 @@ const required = [
   'Agora E2E channel',
   'agora-lawyer-video',
   'function startEvidenceCapture',
+  'function createEvidenceSession',
+  'function uploadEvidenceChunk',
+  'function finalizeEvidenceBackup',
+  'id="backup-rec-status"',
+  'cloud backup',
   'id="front-camera-video"',
   'id="back-camera-video"',
   'id="recording-status-bar"',
@@ -155,6 +160,14 @@ const required = [
   'microphone',
 ];
 required.forEach(id => assert(html.includes(id), `Contains: ${id}`));
+
+const serverJs = fs.readFileSync(path.join(__dirname, 'api', 'server.js'), 'utf8');
+[
+  '/api/evidence/session',
+  '/api/evidence/chunk',
+  '/api/evidence/finalize',
+  'evidenceBackup: true',
+].forEach(id => assert(serverJs.includes(id), `server.js: ${id}`));
 
 // ── Summary ────────────────────────────────────────────────────────────────
 console.log('\n' + '─'.repeat(40));
@@ -166,6 +179,7 @@ if (failed === 0) {
   console.log('MANUAL WALKTHROUGH (2 min):');
   console.log('  1. Accept terms → tap CONNECT LAWYER NOW');
   console.log('  2. Pick "Traffic / Drug Driving" → Connect Lawyer Now');
+  console.log('     → Cameras + mic start during connect; Cloud pill shows Live backup');
   console.log('     → Auto-match → live video (no extra START button)');
   console.log('     → Red banner: "SMS sent to 2 contacts"');
   console.log('  3. Tap ID → see QLD Licence + NRMA Insurance');

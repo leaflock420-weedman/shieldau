@@ -5,5 +5,10 @@ Thumbs.db
 .env
 .env.*
 apk-output/
+signed-output/
 docs/.netlify/
+api/evidence/
 ShieldAU-package.zip
+ShieldAU-signed-package.zip
+signing.keystore
+signing-key-info.txt

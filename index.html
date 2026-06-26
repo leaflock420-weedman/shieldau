@@ -703,7 +703,7 @@
                         <a id="call-lawyer-link" href="lawyer.html" target="_blank" class="text-blue-600 underline ml-2">Lawyer portal</a>
                     </div>
 
-                    <div id="recording-status-bar" class="grid grid-cols-3 gap-2 mb-3 text-[10px]">
+                    <div id="recording-status-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3 text-[10px]">
                         <div id="front-rec-pill" class="rec-pill-warn rounded-xl px-2 py-1.5 flex items-center justify-center gap-1 font-semibold">
                             <i class="fa-solid fa-camera"></i> Front <span id="front-rec-status">…</span>
                         </div>
@@ -712,6 +712,9 @@
                         </div>
                         <div id="mic-rec-pill" class="rec-pill-warn rounded-xl px-2 py-1.5 flex items-center justify-center gap-1 font-semibold">
                             <i class="fa-solid fa-microphone"></i> Mic <span id="mic-rec-status">…</span>
+                        </div>
+                        <div id="backup-rec-pill" class="rec-pill-warn rounded-xl px-2 py-1.5 flex items-center justify-center gap-1 font-semibold">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Cloud <span id="backup-rec-status">…</span>
                         </div>
                     </div>
 
@@ -752,7 +755,7 @@
                     <button onclick="showPinModal()" class="w-full py-3.5 bg-red-600 text-white rounded-2xl font-semibold flex items-center justify-center gap-x-2 text-sm">
                         <i class="fa-solid fa-lock"></i> End Session (PIN required)
                     </button>
-                    <div class="text-[10px] text-center text-zinc-400 mt-2" id="call-recording-footnote">Evidence Shield records <strong>front camera</strong>, <strong>back camera</strong>, and <strong>microphone</strong> together. Recording cannot be stopped during a session — only the lawyer live feed can be muted (demo).</div>
+                    <div class="text-[10px] text-center text-zinc-400 mt-2" id="call-recording-footnote">Evidence Shield records <strong>front camera</strong>, <strong>back camera</strong>, and <strong>microphone</strong> together — streaming encrypted chunks to ShieldAU servers while you connect. Recording cannot be stopped during a session (demo).</div>
                 </div>
 
                 <!-- POST-CALL -->
@@ -2021,6 +2024,9 @@
         let frontRecorder = null;
         let backRecorder = null;
         let evidenceChunks = { front: [], back: [] };
+        let evidenceSessionId = null;
+        let evidenceChunkSeq = { front: 0, back: 0 };
+        let evidenceBackupStatus = 'idle';
         let frontCamRecording = false;
         let backCamRecording = false;
         let micRecording = false;
@@ -2698,7 +2704,7 @@
             startLawyerMatch(true);
         }
 
-        function startLawyerMatch(autoStart) {
+        async function startLawyerMatch(autoStart) {
             showSection('connect-section');
             const status = document.getElementById('matching-status');
             const detail = document.getElementById('matching-detail');
@@ -2710,15 +2716,23 @@
             detail.textContent = categoryLabels[selectedCategory] || 'Queensland specialists';
             progress.style.width = '0%';
 
+            if (autoStart) {
+                generateAgoraChannel();
+                detail.textContent = (categoryLabels[selectedCategory] || 'Queensland specialists') + ' • Starting cameras + mic + cloud backup…';
+                await startEvidenceCapture();
+            }
+
             setTimeout(() => { progress.style.width = '45%'; status.textContent = 'Checking availability...'; }, 450);
             setTimeout(() => { progress.style.width = '85%'; status.textContent = 'Matching specialist...'; }, 1000);
-            setTimeout(() => {
+            setTimeout(async () => {
                 progress.style.width = '100%';
                 status.textContent = autoStart ? 'Lawyer found — starting video...' : 'Lawyer available';
-                generateAgoraChannel();
+                if (!agoraChannelName) {
+                    generateAgoraChannel();
+                }
                 updateAgoraChannelUI();
                 if (autoStart) {
-                    simulateCall();
+                    await simulateCall({ skipCapture: true });
                 } else {
                     lawyerFound.classList.remove('hidden');
                 }
@@ -2862,6 +2876,105 @@
             if (badge) badge.classList.toggle('hidden', !(frontCamRecording || backCamRecording || micRecording));
         }
 
+        function getApiBase() {
+            return window.SHIELDAU_AGORA?.apiBase || '';
+        }
+
+        function updateBackupUI() {
+            const labels = {
+                idle: '…',
+                starting: 'Starting',
+                syncing: 'Syncing',
+                live: 'Live',
+                offline: 'Local only'
+            };
+            const active = ['starting', 'syncing', 'live'].includes(evidenceBackupStatus);
+            setRecPill('backup-rec-pill', 'backup-rec-status', active, labels[evidenceBackupStatus] || '…');
+        }
+
+        async function createEvidenceSession() {
+            const base = getApiBase();
+            if (!base) {
+                evidenceBackupStatus = 'offline';
+                updateBackupUI();
+                return null;
+            }
+            evidenceBackupStatus = 'starting';
+            updateBackupUI();
+            try {
+                const res = await fetch(`${base}/api/evidence/session`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        channel: agoraChannelName || null,
+                        category: selectedCategory
+                    })
+                });
+                if (!res.ok) throw new Error('session create failed');
+                const data = await res.json();
+                evidenceSessionId = data.sessionId;
+                evidenceChunkSeq = { front: 0, back: 0 };
+                evidenceBackupStatus = 'live';
+                updateBackupUI();
+                return evidenceSessionId;
+            } catch (err) {
+                console.warn('Evidence session:', err);
+                evidenceBackupStatus = 'offline';
+                updateBackupUI();
+                return null;
+            }
+        }
+
+        async function uploadEvidenceChunk(stream, blob) {
+            const base = getApiBase();
+            if (!base || !evidenceSessionId || !blob?.size) return;
+            const seq = evidenceChunkSeq[stream]++;
+            evidenceBackupStatus = 'syncing';
+            updateBackupUI();
+            try {
+                const res = await fetch(`${base}/api/evidence/chunk`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/octet-stream',
+                        'x-session-id': evidenceSessionId,
+                        'x-stream': stream,
+                        'x-seq': String(seq)
+                    },
+                    body: blob
+                });
+                evidenceBackupStatus = res.ok ? 'live' : 'offline';
+            } catch (err) {
+                console.warn('Evidence chunk upload:', err);
+                evidenceBackupStatus = 'offline';
+            }
+            updateBackupUI();
+        }
+
+        async function finalizeEvidenceBackup(durationLabel) {
+            const base = getApiBase();
+            if (!base || !evidenceSessionId) return;
+            try {
+                await fetch(`${base}/api/evidence/finalize`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sessionId: evidenceSessionId,
+                        duration: durationLabel,
+                        channel: agoraChannelName,
+                        arrest: arrestProtectionActive,
+                        frontChunks: evidenceChunkSeq.front,
+                        backChunks: evidenceChunkSeq.back,
+                        mic: micRecording
+                    })
+                });
+            } catch (err) {
+                console.warn('Evidence finalize:', err);
+            }
+            evidenceSessionId = null;
+            evidenceBackupStatus = 'idle';
+            updateBackupUI();
+        }
+
         function startMediaRecorder(stream, key) {
             if (!stream || typeof MediaRecorder === 'undefined') return null;
             const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
@@ -2869,59 +2982,89 @@
                 : (MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : '');
             if (!mime) return null;
             const recorder = new MediaRecorder(stream, { mimeType: mime });
-            recorder.ondataavailable = (e) => { if (e.data && e.data.size) evidenceChunks[key].push(e.data); };
+            recorder.ondataavailable = (e) => {
+                if (e.data && e.data.size) {
+                    evidenceChunks[key].push(e.data);
+                    uploadEvidenceChunk(key, e.data);
+                }
+            };
             recorder.start(1000);
             return recorder;
         }
 
+        async function attachFrontStream(stream) {
+            const frontVideo = document.getElementById('front-camera-video');
+            if (frontVideo) {
+                frontVideo.srcObject = stream;
+                await frontVideo.play().catch(() => {});
+            }
+            frontCamRecording = stream.getVideoTracks().some(t => t.readyState === 'live');
+            micRecording = stream.getAudioTracks().some(t => t.readyState === 'live' && t.enabled);
+            frontRecorder = startMediaRecorder(stream, 'front');
+        }
+
+        async function attachBackStream(stream) {
+            const backVideo = document.getElementById('back-camera-video');
+            const fallback = document.getElementById('back-camera-fallback');
+            if (backVideo) {
+                backVideo.srcObject = stream;
+                await backVideo.play().catch(() => {});
+                backVideo.classList.remove('hidden');
+            }
+            if (fallback) fallback.classList.add('hidden');
+            backCamRecording = stream.getVideoTracks().some(t => t.readyState === 'live');
+            backRecorder = startMediaRecorder(stream, 'back');
+        }
+
         async function startEvidenceCapture() {
+            if (evidenceRecording || frontRecorder || backRecorder) return;
+
             evidenceChunks = { front: [], back: [] };
+            evidenceChunkSeq = { front: 0, back: 0 };
             frontCamRecording = false;
             backCamRecording = false;
             micRecording = false;
             updateRecordingIndicators();
+            updateBackupUI();
 
             if (!navigator.mediaDevices?.getUserMedia) {
                 setRecPill('front-rec-pill', 'front-rec-status', false, 'N/A');
                 setRecPill('back-rec-pill', 'back-rec-status', false, 'N/A');
                 setRecPill('mic-rec-pill', 'mic-rec-status', false, 'N/A');
+                evidenceBackupStatus = 'offline';
+                updateBackupUI();
                 return;
             }
 
-            try {
-                frontStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { ideal: 'user' }, width: { ideal: 640 }, height: { ideal: 480 } },
-                    audio: { echoCancellation: true, noiseSuppression: true }
-                });
-                const frontVideo = document.getElementById('front-camera-video');
-                if (frontVideo) {
-                    frontVideo.srcObject = frontStream;
-                    await frontVideo.play().catch(() => {});
+            await createEvidenceSession();
+
+            const frontPromise = navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: 'user' }, width: { ideal: 640 }, height: { ideal: 480 } },
+                audio: { echoCancellation: true, noiseSuppression: true }
+            });
+            const backPromise = navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+                audio: false
+            });
+
+            const [frontResult, backResult] = await Promise.allSettled([frontPromise, backPromise]);
+
+            if (frontResult.status === 'fulfilled') {
+                frontStream = frontResult.value;
+                try { await attachFrontStream(frontStream); } catch (err) {
+                    console.warn('Front camera / mic:', err);
                 }
-                frontCamRecording = frontStream.getVideoTracks().some(t => t.readyState === 'live');
-                micRecording = frontStream.getAudioTracks().some(t => t.readyState === 'live' && t.enabled);
-                frontRecorder = startMediaRecorder(frontStream, 'front');
-            } catch (err) {
-                console.warn('Front camera / mic:', err);
+            } else {
+                console.warn('Front camera / mic:', frontResult.reason);
             }
 
-            try {
-                backStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
-                    audio: false
-                });
-                const backVideo = document.getElementById('back-camera-video');
-                const fallback = document.getElementById('back-camera-fallback');
-                if (backVideo) {
-                    backVideo.srcObject = backStream;
-                    await backVideo.play().catch(() => {});
-                    backVideo.classList.remove('hidden');
+            if (backResult.status === 'fulfilled') {
+                backStream = backResult.value;
+                try { await attachBackStream(backStream); } catch (err) {
+                    console.warn('Back camera:', err);
                 }
-                if (fallback) fallback.classList.add('hidden');
-                backCamRecording = backStream.getVideoTracks().some(t => t.readyState === 'live');
-                backRecorder = startMediaRecorder(backStream, 'back');
-            } catch (err) {
-                console.warn('Back camera:', err);
+            } else {
+                console.warn('Back camera:', backResult.reason);
                 const fallback = document.getElementById('back-camera-fallback');
                 if (fallback) {
                     fallback.innerHTML = '<i class="fa-solid fa-camera text-2xl mb-2 opacity-50"></i>Rear camera unavailable on this device — front cam + mic still recording';
@@ -2930,6 +3073,7 @@
 
             evidenceRecording = frontCamRecording || backCamRecording || micRecording;
             updateRecordingIndicators();
+            document.getElementById('evidence-rec-badge')?.classList.toggle('hidden', !evidenceRecording);
         }
 
         function stopEvidenceCapture() {
@@ -2952,6 +3096,7 @@
                 if (el) el.srcObject = null;
             });
             document.getElementById('back-camera-fallback')?.classList.remove('hidden');
+            evidenceRecording = false;
         }
 
         function saveEvidenceToVault(durationLabel) {
@@ -2972,6 +3117,8 @@
                     mic: micRecording,
                     frontChunks: evidenceChunks.front.length,
                     backChunks: evidenceChunks.back.length,
+                    serverSessionId: evidenceSessionId,
+                    serverBackup: evidenceBackupStatus === 'live' || evidenceBackupStatus === 'syncing',
                     arrest: arrestProtectionActive
                 }
             });
@@ -2979,7 +3126,7 @@
             return summary;
         }
 
-        async function simulateCall() {
+        async function simulateCall(options = {}) {
             showSection('call-section');
             arrestProtectionActive = false;
             lawyerMuted = false;
@@ -3003,7 +3150,9 @@
                 updateCallTimer();
             }, 1000);
 
-            await startEvidenceCapture();
+            if (!options.skipCapture) {
+                await startEvidenceCapture();
+            }
 
             try {
                 await joinAgoraCall(agoraChannelName);
@@ -3388,6 +3537,7 @@
 
             await leaveAgoraCall();
             const savedSummary = saveEvidenceToVault(durationLabel);
+            await finalizeEvidenceBackup(durationLabel);
             stopEvidenceCapture();
             agoraChannelName = '';
             frontCamRecording = false;
