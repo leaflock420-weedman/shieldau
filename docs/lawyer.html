@@ -68,7 +68,7 @@
         async function fetchAgoraSession(channel, uid, role = 'publisher') {
             const base = window.SHIELDAU_AGORA?.apiBase || '';
             const configRes = await fetch(`${base}/api/agora/config`);
-            if (!configRes.ok) throw new Error('Agora API not configured — set env vars on shieldau-api');
+            if (!configRes.ok) throw new Error('Agora API not configured — set AGORA env vars on Render');
             const { appId } = await configRes.json();
             const tokenRes = await fetch(`${base}/api/agora/token?channel=${encodeURIComponent(channel)}&uid=${uid}&role=${role}`);
             if (!tokenRes.ok) {

@@ -52,7 +52,7 @@ node test-shieldau.js
 ## Agora real video (E2E)
 
 1. Create a project at [console.agora.io](https://console.agora.io) → enable **App Certificate**
-2. On Render → **shieldau-api** service → Environment:
+2. On Render → **shieldau** service → Environment:
    - `AGORA_APP_ID` = your App ID
    - `AGORA_APP_CERTIFICATE` = your App Certificate
 3. Client app: https://shieldau.onrender.com → start video session
@@ -60,14 +60,13 @@ node test-shieldau.js
 
 Evidence Shield (dual camera + mic) runs locally; Agora carries live lawyer ↔ client video.
 
-## Deploy on Render (do this first)
+## Deploy on Render
 
-1. Go to [dashboard.render.com](https://dashboard.render.com) → **New** → **Blueprint**
-2. Connect repo `leaflock420-weedman/shieldau` → Render reads `render.yaml` from the repo root
-3. Click **Apply** — site deploys from the `/docs` folder (free static hosting)
-4. Your URL will be `https://shieldau.onrender.com` (or similar)
+1. [dashboard.render.com](https://dashboard.render.com) → **Blueprint** → sync `leaflock420-weedman/shieldau`
+2. One **Node** service serves the PWA (`docs/`) + Agora token API at `/api/agora/*`
+3. Add `AGORA_APP_ID` and `AGORA_APP_CERTIFICATE` in Environment → redeploy
 
-Every `git push` to `main` auto-redeploys.
+Every `git push` to `main` auto-redeploys to `https://shieldau.onrender.com`.
 
 **Android APK comes later** — once Render is live, use that URL in PWABuilder (see [APK-BUILD.md](APK-BUILD.md)).
 

@@ -1,6 +1,11 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { RtcTokenBuilder, RtcRole } from 'agora-token';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DOCS_DIR = path.join(__dirname, '..', 'docs');
 
 const app = express();
 const PORT = process.env.PORT || 8787;
@@ -8,24 +13,9 @@ const PORT = process.env.PORT || 8787;
 const APP_ID = process.env.AGORA_APP_ID || '';
 const APP_CERTIFICATE = process.env.AGORA_APP_CERTIFICATE || '';
 
-const ALLOWED_ORIGINS = [
-  'https://shieldau.onrender.com',
-  'https://leaflock420-weedman.github.io',
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-  'http://localhost:5500',
-  'http://127.0.0.1:5500',
-];
-
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || ALLOWED_ORIGINS.some((o) => origin === o || origin.startsWith(o))) {
-      callback(null, true);
-      return;
-    }
-    if (/^https:\/\/shieldau.*\.onrender\.com$/.test(origin)) callback(null, true);
-    else if (/\.github\.io$/.test(origin)) callback(null, true);
-    else callback(null, true);
+    callback(null, true);
   },
 }));
 
@@ -39,7 +29,7 @@ app.get('/health', (_req, res) => {
 
 app.get('/api/agora/config', (_req, res) => {
   if (!APP_ID) {
-    return res.status(503).json({ error: 'AGORA_APP_ID not configured on server' });
+    return res.status(503).json({ error: 'AGORA_APP_ID not configured — add in Render Environment' });
   }
   res.json({ appId: APP_ID });
 });
@@ -48,7 +38,7 @@ app.get('/api/agora/token', (req, res) => {
   if (!APP_ID || !APP_CERTIFICATE) {
     return res.status(503).json({
       error: 'Agora not configured',
-      hint: 'Set AGORA_APP_ID and AGORA_APP_CERTIFICATE on Render (shieldau-api service)',
+      hint: 'Set AGORA_APP_ID and AGORA_APP_CERTIFICATE on Render → shieldau → Environment',
     });
   }
 
@@ -81,6 +71,15 @@ app.get('/api/agora/token', (req, res) => {
   }
 });
 
+app.use(express.static(DOCS_DIR, {
+  index: 'index.html',
+  setHeaders(res, filePath) {
+    if (filePath.endsWith('sw.js') || filePath.endsWith('manifest.json')) {
+      res.setHeader('Cache-Control', 'no-cache');
+    }
+  },
+}));
+
 app.listen(PORT, () => {
-  console.log(`ShieldAU API on :${PORT} | Agora: ${APP_ID ? 'configured' : 'MISSING env vars'}`);
+  console.log(`ShieldAU on :${PORT} | static: ${DOCS_DIR} | Agora: ${APP_ID ? 'yes' : 'MISSING'}`);
 });

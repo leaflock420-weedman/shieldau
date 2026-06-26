@@ -1,26 +1,7 @@
-# ShieldAU — static PWA + Agora token API
+# ShieldAU — Node serves docs/ + Agora token API on one URL
 services:
   - type: web
     name: shieldau
-    runtime: static
-    repo: https://github.com/leaflock420-weedman/shieldau
-    branch: main
-    buildCommand: echo "Static PWA — no build step"
-    staticPublishPath: docs
-    pullRequestPreviewsEnabled: true
-    envVars:
-      - key: SKIP_INSTALL_DEPS
-        value: "true"
-    headers:
-      - path: /sw.js
-        name: Cache-Control
-        value: no-cache
-      - path: /manifest.json
-        name: Cache-Control
-        value: no-cache
-
-  - type: web
-    name: shieldau-api
     runtime: node
     repo: https://github.com/leaflock420-weedman/shieldau
     branch: main
@@ -28,6 +9,7 @@ services:
     buildCommand: npm install
     startCommand: npm start
     plan: free
+    pullRequestPreviewsEnabled: true
     envVars:
       - key: AGORA_APP_ID
         sync: false

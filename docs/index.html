@@ -2726,7 +2726,7 @@
             const configRes = await fetch(`${base}/api/agora/config`);
             if (!configRes.ok) {
                 const err = await configRes.json().catch(() => ({}));
-                throw new Error(err.error || 'Agora API not reachable — deploy shieldau-api on Render');
+                throw new Error(err.error || 'Agora API not reachable — add AGORA env vars on Render');
             }
             const { appId } = await configRes.json();
             const tokenRes = await fetch(
