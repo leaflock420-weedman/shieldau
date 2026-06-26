@@ -6,8 +6,8 @@ Australian lawyer-connection platform demo — inspired by Attorney Shield, buil
 
 | Platform | URL |
 |----------|-----|
-| **Web app (Ultimate v2.0)** | https://leaflock420-weedman.github.io/shieldau/ |
-| **Install APK** | https://leaflock420-weedman.github.io/shieldau/install.html |
+| **Web app (Render — primary)** | https://shieldau.onrender.com *(after you connect Blueprint below)* |
+| **Web app (GitHub Pages backup)** | https://leaflock420-weedman.github.io/shieldau/ |
 | **GitHub** | https://github.com/leaflock420-weedman/shieldau |
 
 ## 2-minute walkthrough
@@ -49,11 +49,18 @@ Australian lawyer-connection platform demo — inspired by Attorney Shield, buil
 node test-shieldau.js
 ```
 
-## Deploy
+## Deploy on Render (do this first)
 
-GitHub Pages is live from the `/docs` folder on `main`.
+1. Go to [dashboard.render.com](https://dashboard.render.com) → **New** → **Blueprint**
+2. Connect repo `leaflock420-weedman/shieldau` → Render reads `render.yaml` from the repo root
+3. Click **Apply** — site deploys from the `/docs` folder (free static hosting)
+4. Your URL will be `https://shieldau.onrender.com` (or similar)
 
-Android APK: see [APK-BUILD.md](APK-BUILD.md) or [Releases](https://github.com/leaflock420-weedman/shieldau/releases).
+Every `git push` to `main` auto-redeploys.
+
+**Android APK comes later** — once Render is live, use that URL in PWABuilder (see [APK-BUILD.md](APK-BUILD.md)).
+
+GitHub Pages also deploys from `/docs` as a backup.
 
 ## Disclaimer
 

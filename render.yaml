@@ -1,10 +1,21 @@
+# ShieldAU — deploy on Render (primary host for now; APK built from this URL later)
+# Dashboard: New → Blueprint → connect github.com/leaflock420-weedman/shieldau
 services:
   - type: web
     name: shieldau
     runtime: static
-    buildCommand: echo "Static site — no build"
+    repo: https://github.com/leaflock420-weedman/shieldau
+    branch: main
+    buildCommand: echo "Static PWA — no build step"
     staticPublishPath: docs
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: SKIP_INSTALL_DEPS
+        value: "true"
+    headers:
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache
+      - path: /manifest.json
+        name: Cache-Control
+        value: no-cache

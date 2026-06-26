@@ -1,14 +1,14 @@
-const CACHE = 'shieldau-v3';
+const CACHE = 'shieldau-v4';
 const PRECACHE = [
-  '/shieldau/',
-  '/shieldau/index.html',
-  '/shieldau/manifest.json',
-  '/shieldau/icons/icon-96.png',
-  '/shieldau/icons/icon-192.png',
-  '/shieldau/icons/icon-512.png',
-  '/shieldau/screenshots/narrow.png',
-  '/shieldau/screenshots/wide.png',
-  '/shieldau/sw.js'
+  './',
+  './index.html',
+  './manifest.json',
+  './icons/icon-96.png',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './screenshots/narrow.png',
+  './screenshots/wide.png',
+  './sw.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -39,7 +39,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE).then((cache) => cache.put(event.request, copy));
         }
         return response;
-      }).catch(() => caches.match('/shieldau/index.html'));
+      }).catch(() => caches.match('./index.html'));
     })
   );
 });

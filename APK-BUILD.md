@@ -1,13 +1,15 @@
 # ShieldAU → Android APK
 
-## Live site (GitHub Pages)
+## Live site (Render — use this for APK)
 
-https://leaflock420-weedman.github.io/shieldau/index.html
+https://shieldau.onrender.com
 
-## PWABuilder (recommended)
+*(Backup: https://leaflock420-weedman.github.io/shieldau/index.html)*
+
+## PWABuilder (recommended — after Render is live)
 
 1. Open https://www.pwabuilder.com
-2. Paste: `https://leaflock420-weedman.github.io/shieldau/index.html`
+2. Paste: `https://shieldau.onrender.com`
 3. Click **Start** → review manifest score → **Package For Stores** → **Android**
 4. App Name: `ShieldAU` | Package: `com.shieldau.demo` | Version: `1.0.0`
 5. **Generate Package** → download APK
