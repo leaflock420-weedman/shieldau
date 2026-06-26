@@ -191,7 +191,7 @@ async function verifyLive() {
       const res = await fetch(url, { redirect: "follow" });
       const text = await res.text();
       console.log(`${url} -> ${res.status} (attempt ${attempt})`);
-      if (res.status === 200 && (text.includes("ShieldAU") || text.includes("INSTANT LAWYER VIDEO"))) {
+      if (res.status === 200 && (text.includes("ShieldAU") || text.includes("CONNECT LAWYER NOW"))) {
         return true;
       }
     } catch (e) {

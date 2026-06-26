@@ -12,12 +12,11 @@ Australian lawyer-connection platform demo — inspired by Attorney Shield, buil
 
 ## 2-minute walkthrough
 
-1. Accept terms → tap **INSTANT LAWYER VIDEO**
-2. Pick a category → enable emergency alert → **Proceed**
-3. Wait for match → **START VIDEO SESSION**
-4. Tap **ID** → view Digital Glovebox docs
-5. **End Session** → PIN `1234` → see billing summary
-6. **More** → Family Plan, Emergency Contacts, Wallet
+1. Accept terms → tap **CONNECT LAWYER NOW**
+2. Pick a category → **Connect Lawyer Now** (auto-matches and starts video)
+3. Tap **ID** → view Digital Glovebox docs
+4. **End Session** → PIN `1234` → see billing summary
+5. **More** → Family Plan, Emergency Contacts, Wallet
 
 ## Features
 

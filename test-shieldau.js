@@ -120,7 +120,10 @@ const required = [
   'function globalSearch',
   'function sosConnect',
   'Fine Defence',
-  'INSTANT LAWYER VIDEO',
+  'CONNECT LAWYER NOW',
+  'function connectLawyerNow',
+  'function instantLawyerConnect',
+  'function startLawyerMatch',
   'Agora E2E',
   'Digital Glovebox',
   'Shield Family',
@@ -161,14 +164,13 @@ console.log('─'.repeat(40));
 if (failed === 0) {
   console.log('\n✅ All tests passed. Open index.html and run the manual walkthrough below.\n');
   console.log('MANUAL WALKTHROUGH (2 min):');
-  console.log('  1. Accept terms → tap INSTANT LAWYER VIDEO');
-  console.log('  2. Pick "Traffic / Drug Driving" → check emergency alert ON → Proceed');
-  console.log('  3. Wait for match → START VIDEO SESSION');
+  console.log('  1. Accept terms → tap CONNECT LAWYER NOW');
+  console.log('  2. Pick "Traffic / Drug Driving" → Connect Lawyer Now');
+  console.log('     → Auto-match → live video (no extra START button)');
   console.log('     → Red banner: "SMS sent to 2 contacts"');
-  console.log('     → Video UI with lawyer + PiP');
-  console.log('  4. Tap ID → see QLD Licence + NRMA Insurance');
-  console.log('  5. End Session → PIN: 1-2-3-4 → post-call bill ~$0 (first 15 min free)');
-  console.log('  6. More → Family Plan → see Sarah + Tom sub-accounts\n');
+  console.log('  3. Tap ID → see QLD Licence + NRMA Insurance');
+  console.log('  4. End Session → PIN: 1-2-3-4 → post-call bill ~$0 (first 15 min free)');
+  console.log('  5. More → Family Plan → see Sarah + Tom sub-accounts\n');
   process.exit(0);
 } else {
   process.exit(1);

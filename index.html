@@ -361,12 +361,12 @@
                                 <div class="flex-1">
                                     <div class="font-semibold text-red-700 text-lg leading-none mb-1">Need a lawyer now?</div>
                                     <p class="text-sm text-red-600/90 mb-3">Connect to an independent Queensland lawyer from our partner panel.</p>
-                                    <button onclick="showSection('category-section')"
+                                    <button onclick="connectLawyerNow()"
                                             class="police-btn w-full py-4 rounded-2xl text-white font-semibold flex items-center justify-center gap-x-3 text-sm shadow-lg">
                                         <i class="fa-solid fa-video"></i>
-                                        <span>INSTANT LAWYER VIDEO</span>
+                                        <span>CONNECT LAWYER NOW</span>
                                     </button>
-                                    <div class="text-[10px] text-red-600/70 text-center mt-2">Est. wait: &lt; 2 min (demo) • After-hours rates may apply</div>
+                                    <div class="text-[10px] text-red-600/70 text-center mt-2">2 steps: tap above → Connect Now • First 15 min FREE</div>
                                     <a href="install.html" class="mt-3 block text-center text-[11px] text-blue-700 underline">Install Android app</a>
                                 </div>
                             </div>
@@ -518,7 +518,7 @@
                     </div>
 
                     <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-4 text-xs text-amber-900">
-                        Select a category so we can match you to the right independent lawyer. This is not legal advice.
+                        <strong>Step 2 of 2</strong> — pick a category, then tap Connect Lawyer Now. Video starts automatically. First 15 min FREE. Not legal advice.
                     </div>
 
                     <div class="space-y-2 mb-5" id="category-list">
@@ -544,9 +544,9 @@
                         </button>
                     </div>
 
-                    <button onclick="startMatching()" id="match-btn" disabled
-                            class="w-full py-4 bg-blue-800 text-white rounded-2xl font-semibold text-sm disabled:opacity-40">
-                        Find Available Lawyer
+                    <button onclick="instantLawyerConnect()" id="match-btn" disabled
+                            class="w-full py-4 bg-emerald-600 text-white rounded-2xl font-semibold text-sm disabled:opacity-40">
+                        Connect Lawyer Now
                     </button>
                 </div>
 
@@ -644,10 +644,9 @@
                             <a id="lawyer-join-link" href="lawyer.html" target="_blank" class="text-blue-700 underline mt-2 inline-block">Lawyer joins here →</a>
                         </div>
 
-                        <button onclick="simulateCall()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-3xl flex items-center justify-center gap-x-2">
-                            <i class="fa-solid fa-video"></i>
-                            <span>START VIDEO SESSION</span>
-                        </button>
+                        <div id="auto-connect-msg" class="text-center text-sm text-emerald-700 font-medium py-2">
+                            <i class="fa-solid fa-spinner fa-spin mr-1"></i> Starting video session...
+                        </div>
                         <div class="text-center mt-3">
                             <button onclick="showSection('home-section')" class="text-xs text-zinc-400">Cancel</button>
                         </div>
@@ -2421,9 +2420,27 @@
 
         function sosConnect() {
             if (confirm('Connect to emergency lawyer video now?')) {
-                selectedCategory = selectedCategory || 'general';
-                showSection('category-section');
+                selectedCategory = 'general';
+                startLawyerMatch(true);
             }
+        }
+
+        function connectLawyerNow() {
+            showSection('category-section');
+        }
+
+        function instantLawyerConnect() {
+            if (!selectedCategory) {
+                alert('Please select a category first.');
+                return;
+            }
+            startLawyerMatch(true);
+        }
+
+        function isEmergencyAlertEnabled() {
+            const master = document.getElementById('emergency-master-toggle');
+            if (master) return master.checked;
+            return localStorage.getItem('shieldau_emergency_enabled') !== 'false';
         }
 
         function globalSearch(q) {
@@ -2670,14 +2687,18 @@
 
         function selectCategoryQuick(cat) {
             selectedCategory = cat;
-            showSection('precall-section');
+            startLawyerMatch(true);
         }
 
         function startMatching() {
-            showSection('precall-section');
+            instantLawyerConnect();
         }
 
         function startPoliceFlow() {
+            startLawyerMatch(true);
+        }
+
+        function startLawyerMatch(autoStart) {
             showSection('connect-section');
             const status = document.getElementById('matching-status');
             const detail = document.getElementById('matching-detail');
@@ -2689,15 +2710,19 @@
             detail.textContent = categoryLabels[selectedCategory] || 'Queensland specialists';
             progress.style.width = '0%';
 
-            setTimeout(() => { progress.style.width = '30%'; status.textContent = 'Checking availability...'; }, 600);
-            setTimeout(() => { progress.style.width = '65%'; status.textContent = 'Matching specialist...'; }, 1400);
+            setTimeout(() => { progress.style.width = '45%'; status.textContent = 'Checking availability...'; }, 450);
+            setTimeout(() => { progress.style.width = '85%'; status.textContent = 'Matching specialist...'; }, 1000);
             setTimeout(() => {
                 progress.style.width = '100%';
-                status.textContent = 'Lawyer available';
-                lawyerFound.classList.remove('hidden');
+                status.textContent = autoStart ? 'Lawyer found — starting video...' : 'Lawyer available';
                 generateAgoraChannel();
                 updateAgoraChannelUI();
-            }, 2200);
+                if (autoStart) {
+                    simulateCall();
+                } else {
+                    lawyerFound.classList.remove('hidden');
+                }
+            }, 1500);
         }
 
         function generateAgoraChannel() {
@@ -2988,9 +3013,7 @@
                 if (st) st.textContent = 'Agora offline — Evidence Shield recording only. ' + (err.message || '');
             }
 
-            const alertOn = document.getElementById('emergency-alert-checkbox')?.checked
-                && document.getElementById('emergency-master-toggle')?.checked;
-            if (alertOn) sendEmergencyAlert('Lawyer video session started');
+            if (isEmergencyAlertEnabled()) sendEmergencyAlert('Lawyer video session started');
         }
 
         function activateArrestProtection() {
@@ -3487,7 +3510,7 @@
         document.addEventListener('keydown', e => {
             if (e.key === '?' && document.getElementById('home-section').classList.contains('active')) {
                 e.preventDefault();
-                showSection('category-section');
+                connectLawyerNow();
             }
         });
 
