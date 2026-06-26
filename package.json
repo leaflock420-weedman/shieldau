@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test-shieldau.js",
+    "deploy": "node scripts/render-deploy.mjs"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +16,7 @@
     "pptxgenjs": "^4.0.1"
   },
   "devDependencies": {
-    "@bubblewrap/cli": "^1.24.1"
+    "@bubblewrap/cli": "^1.24.1",
+    "playwright": "^1.52.0"
   }
 }

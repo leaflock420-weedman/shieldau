@@ -6,7 +6,7 @@ Australian lawyer-connection platform demo — inspired by Attorney Shield, buil
 
 | Platform | URL |
 |----------|-----|
-| **Web app (Render — primary)** | https://shieldau.onrender.com *(after you connect Blueprint below)* |
+| **Web app (Render — primary)** | https://shieldau.onrender.com |
 | **Web app (GitHub Pages backup)** | https://leaflock420-weedman.github.io/shieldau/ |
 | **GitHub** | https://github.com/leaflock420-weedman/shieldau |
 
