@@ -2975,45 +2975,213 @@
             updateBackupUI();
         }
 
+        function pickRecorderMime(stream) {
+            const hasAudio = stream.getAudioTracks().some(t => t.readyState === 'live' && t.enabled);
+            const candidates = hasAudio
+                ? ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm;codecs=vp9', 'video/webm']
+                : ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+            return candidates.find(m => MediaRecorder.isTypeSupported(m)) || '';
+        }
+
+        function isLiveVideoTrack(stream) {
+            return stream?.getVideoTracks?.().some(t => t.readyState === 'live' && t.enabled) || false;
+        }
+
+        function watchVideoTrack(stream, onEnd) {
+            stream?.getVideoTracks?.().forEach((track) => {
+                track.onended = onEnd;
+                track.onmute = () => { if (!track.enabled) onEnd(); };
+            });
+        }
+
         function startMediaRecorder(stream, key) {
             if (!stream || typeof MediaRecorder === 'undefined') return null;
-            const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
-                ? 'video/webm;codecs=vp9,opus'
-                : (MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : '');
+            const mime = pickRecorderMime(stream);
             if (!mime) return null;
-            const recorder = new MediaRecorder(stream, { mimeType: mime });
-            recorder.ondataavailable = (e) => {
-                if (e.data && e.data.size) {
-                    evidenceChunks[key].push(e.data);
-                    uploadEvidenceChunk(key, e.data);
-                }
-            };
-            recorder.start(1000);
-            return recorder;
+            try {
+                const recorder = new MediaRecorder(stream, { mimeType: mime });
+                recorder.ondataavailable = (e) => {
+                    if (e.data && e.data.size) {
+                        evidenceChunks[key].push(e.data);
+                        uploadEvidenceChunk(key, e.data);
+                    }
+                };
+                recorder.onerror = (e) => console.warn(`MediaRecorder ${key}:`, e.error || e);
+                recorder.start(1000);
+                return recorder;
+            } catch (err) {
+                console.warn(`MediaRecorder ${key} failed:`, err);
+                return null;
+            }
+        }
+
+        async function playCameraPreview(videoId, stream) {
+            const el = document.getElementById(videoId);
+            if (!el || !stream) return;
+            el.srcObject = stream;
+            el.muted = true;
+            el.setAttribute('playsinline', '');
+            await el.play().catch(() => {});
+        }
+
+        async function resumeCameraPreviews() {
+            await playCameraPreview('front-camera-video', frontStream);
+            await playCameraPreview('back-camera-video', backStream);
+            if (backStream && isLiveVideoTrack(backStream)) {
+                document.getElementById('back-camera-fallback')?.classList.add('hidden');
+                document.getElementById('back-camera-video')?.classList.remove('hidden');
+            }
         }
 
         async function attachFrontStream(stream) {
-            const frontVideo = document.getElementById('front-camera-video');
-            if (frontVideo) {
-                frontVideo.srcObject = stream;
-                await frontVideo.play().catch(() => {});
-            }
-            frontCamRecording = stream.getVideoTracks().some(t => t.readyState === 'live');
+            await playCameraPreview('front-camera-video', stream);
+            frontCamRecording = isLiveVideoTrack(stream);
             micRecording = stream.getAudioTracks().some(t => t.readyState === 'live' && t.enabled);
             frontRecorder = startMediaRecorder(stream, 'front');
+            if (frontRecorder?.state === 'recording') frontCamRecording = true;
+            watchVideoTrack(stream, () => {
+                frontCamRecording = false;
+                updateRecordingIndicators();
+            });
         }
 
-        async function attachBackStream(stream) {
-            const backVideo = document.getElementById('back-camera-video');
+        async function attachBackStream(stream, simulated = false) {
+            await playCameraPreview('back-camera-video', stream);
             const fallback = document.getElementById('back-camera-fallback');
-            if (backVideo) {
-                backVideo.srcObject = stream;
-                await backVideo.play().catch(() => {});
-                backVideo.classList.remove('hidden');
+            if (fallback) {
+                fallback.classList.add('hidden');
+                if (simulated) {
+                    fallback.innerHTML = '<i class="fa-solid fa-camera text-2xl mb-2 opacity-50"></i>Single camera device — rear feed mirrored for demo';
+                }
             }
-            if (fallback) fallback.classList.add('hidden');
-            backCamRecording = stream.getVideoTracks().some(t => t.readyState === 'live');
             backRecorder = startMediaRecorder(stream, 'back');
+            backCamRecording = isLiveVideoTrack(stream) && !!backRecorder;
+            watchVideoTrack(stream, () => {
+                backCamRecording = false;
+                updateRecordingIndicators();
+            });
+        }
+
+        async function findRearCameraDeviceId() {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const cameras = devices.filter(d => d.kind === 'videoinput');
+            const rearByLabel = cameras.find(d => /back|rear|environment|traseira|arrière|wide/i.test(d.label));
+            if (rearByLabel?.deviceId) return rearByLabel.deviceId;
+            const frontByLabel = cameras.find(d => /front|user|face|selfie|facetime/i.test(d.label));
+            if (cameras.length >= 2) {
+                const other = cameras.find(d => d.deviceId !== frontByLabel?.deviceId);
+                if (other?.deviceId) return other.deviceId;
+                return cameras[cameras.length - 1].deviceId;
+            }
+            return null;
+        }
+
+        function rearCameraConstraints(deviceId) {
+            const attempts = [];
+            if (deviceId) {
+                attempts.push({ video: { deviceId: { exact: deviceId }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+                attempts.push({ video: { deviceId: { ideal: deviceId } }, audio: false });
+            }
+            attempts.push(
+                { video: { facingMode: { exact: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false },
+                { video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false },
+                { video: { facingMode: 'environment' }, audio: false }
+            );
+            return attempts;
+        }
+
+        async function openFrontCamera() {
+            return navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: 'user' }, width: { ideal: 640 }, height: { ideal: 480 } },
+                audio: { echoCancellation: true, noiseSuppression: true }
+            });
+        }
+
+        async function openRearCamera() {
+            const deviceId = await findRearCameraDeviceId();
+            let lastErr;
+            for (const constraints of rearCameraConstraints(deviceId)) {
+                try {
+                    return await navigator.mediaDevices.getUserMedia(constraints);
+                } catch (err) {
+                    lastErr = err;
+                }
+            }
+            throw lastErr || new Error('Rear camera unavailable');
+        }
+
+        function releaseStream(stream) {
+            if (!stream) return;
+            stream.getTracks().forEach(t => { try { t.stop(); } catch {} });
+        }
+
+        function createMirroredRearStream(sourceStream) {
+            const track = sourceStream?.getVideoTracks?.()[0];
+            if (!track || track.readyState !== 'live') return null;
+            try {
+                return new MediaStream([track.clone()]);
+            } catch {
+                return new MediaStream([track]);
+            }
+        }
+
+        function resetCaptureStreams() {
+            [frontRecorder, backRecorder].forEach((rec) => {
+                if (rec && rec.state !== 'inactive') {
+                    try { rec.stop(); } catch {}
+                }
+            });
+            frontRecorder = null;
+            backRecorder = null;
+            releaseStream(frontStream);
+            releaseStream(backStream);
+            frontStream = null;
+            backStream = null;
+            frontCamRecording = false;
+            backCamRecording = false;
+        }
+
+        async function openDualCameras() {
+            const strategies = [
+                async () => {
+                    frontStream = await openFrontCamera();
+                    await attachFrontStream(frontStream);
+                    await new Promise(r => setTimeout(r, 300));
+                    backStream = await openRearCamera();
+                    await attachBackStream(backStream, false);
+                },
+                async () => {
+                    backStream = await openRearCamera();
+                    await attachBackStream(backStream, false);
+                    await new Promise(r => setTimeout(r, 300));
+                    frontStream = await openFrontCamera();
+                    await attachFrontStream(frontStream);
+                }
+            ];
+
+            for (const strategy of strategies) {
+                try {
+                    await strategy();
+                    if (backCamRecording) return;
+                } catch (err) {
+                    console.warn('Dual camera strategy failed:', err);
+                }
+                if (!backCamRecording) resetCaptureStreams();
+            }
+
+            if (!backCamRecording) {
+                try {
+                    frontStream = await openFrontCamera();
+                    await attachFrontStream(frontStream);
+                    const mirrored = createMirroredRearStream(frontStream);
+                    if (mirrored) {
+                        backStream = mirrored;
+                        await attachBackStream(backStream, true);
+                    }
+                } catch (err) {
+                    console.warn('Mirrored rear fallback failed:', err);
+                }
+            }
         }
 
         async function startEvidenceCapture() {
@@ -3038,36 +3206,23 @@
 
             await createEvidenceSession();
 
-            const frontPromise = navigator.mediaDevices.getUserMedia({
-                video: { facingMode: { ideal: 'user' }, width: { ideal: 640 }, height: { ideal: 480 } },
-                audio: { echoCancellation: true, noiseSuppression: true }
-            });
-            const backPromise = navigator.mediaDevices.getUserMedia({
-                video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
-                audio: false
-            });
-
-            const [frontResult, backResult] = await Promise.allSettled([frontPromise, backPromise]);
-
-            if (frontResult.status === 'fulfilled') {
-                frontStream = frontResult.value;
-                try { await attachFrontStream(frontStream); } catch (err) {
-                    console.warn('Front camera / mic:', err);
-                }
-            } else {
-                console.warn('Front camera / mic:', frontResult.reason);
+            try {
+                await openDualCameras();
+            } catch (err) {
+                console.warn('Evidence capture:', err);
             }
 
-            if (backResult.status === 'fulfilled') {
-                backStream = backResult.value;
-                try { await attachBackStream(backStream); } catch (err) {
-                    console.warn('Back camera:', err);
-                }
-            } else {
-                console.warn('Back camera:', backResult.reason);
+            if (!frontCamRecording && !backCamRecording) {
                 const fallback = document.getElementById('back-camera-fallback');
                 if (fallback) {
-                    fallback.innerHTML = '<i class="fa-solid fa-camera text-2xl mb-2 opacity-50"></i>Rear camera unavailable on this device — front cam + mic still recording';
+                    fallback.classList.remove('hidden');
+                    fallback.innerHTML = '<i class="fa-solid fa-camera text-2xl mb-2 opacity-50"></i>Allow camera access to start Evidence Shield';
+                }
+            } else if (!backCamRecording) {
+                const fallback = document.getElementById('back-camera-fallback');
+                if (fallback) {
+                    fallback.classList.remove('hidden');
+                    fallback.innerHTML = '<i class="fa-solid fa-camera text-2xl mb-2 opacity-50"></i>Rear camera unavailable — front cam + mic still recording';
                 }
             }
 
@@ -3152,6 +3307,8 @@
 
             if (!options.skipCapture) {
                 await startEvidenceCapture();
+            } else {
+                await resumeCameraPreviews();
             }
 
             try {

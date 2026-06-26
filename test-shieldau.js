@@ -149,6 +149,8 @@ const required = [
   'function createEvidenceSession',
   'function uploadEvidenceChunk',
   'function finalizeEvidenceBackup',
+  'function openRearCamera',
+  'function resumeCameraPreviews',
   'id="backup-rec-status"',
   'cloud backup',
   'id="front-camera-video"',
