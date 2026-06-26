@@ -49,6 +49,17 @@ Australian lawyer-connection platform demo — inspired by Attorney Shield, buil
 node test-shieldau.js
 ```
 
+## Agora real video (E2E)
+
+1. Create a project at [console.agora.io](https://console.agora.io) → enable **App Certificate**
+2. On Render → **shieldau-api** service → Environment:
+   - `AGORA_APP_ID` = your App ID
+   - `AGORA_APP_CERTIFICATE` = your App Certificate
+3. Client app: https://shieldau.onrender.com → start video session
+4. Lawyer joins same channel: https://shieldau.onrender.com/lawyer.html?channel=CHANNEL_ID
+
+Evidence Shield (dual camera + mic) runs locally; Agora carries live lawyer ↔ client video.
+
 ## Deploy on Render (do this first)
 
 1. Go to [dashboard.render.com](https://dashboard.render.com) → **New** → **Blueprint**

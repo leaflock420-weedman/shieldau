@@ -13,6 +13,8 @@
     <title>ShieldAU • Technology Platform Demo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="agora-config.js"></script>
+    <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.23.2.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
 
@@ -636,9 +638,15 @@
                             <div class="text-[10px] text-zinc-500">First 15 min: ShieldAU pays lawyer from member subscriptions — $0 to you. After that: per-minute from Shield Credit until lawyer ends call.</div>
                         </div>
 
+                        <div id="agora-channel-box" class="hidden bg-blue-50 border border-blue-200 rounded-2xl p-3 mb-4 text-[10px] text-blue-900">
+                            <div class="font-semibold mb-1"><i class="fa-solid fa-tower-broadcast mr-1"></i>Agora E2E channel</div>
+                            <code id="match-agora-channel" class="block bg-white rounded-lg px-2 py-1.5 break-all text-zinc-800"></code>
+                            <a id="lawyer-join-link" href="lawyer.html" target="_blank" class="text-blue-700 underline mt-2 inline-block">Lawyer joins here →</a>
+                        </div>
+
                         <button onclick="simulateCall()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-3xl flex items-center justify-center gap-x-2">
                             <i class="fa-solid fa-video"></i>
-                            <span>START VIDEO SESSION (DEMO)</span>
+                            <span>START VIDEO SESSION</span>
                         </button>
                         <div class="text-center mt-3">
                             <button onclick="showSection('home-section')" class="text-xs text-zinc-400">Cancel</button>
@@ -666,14 +674,17 @@
                             <i class="fa-solid fa-camera text-2xl mb-2 opacity-50"></i>
                             Back camera starting…
                         </div>
-                        <div class="lawyer-overlay absolute inset-0 flex flex-col items-center justify-center text-white pointer-events-none">
-                            <img src="https://i.pravatar.cc/200?img=28" alt="" class="w-20 h-20 rounded-full border-4 border-emerald-500 object-cover mb-2 shadow-lg bg-zinc-800">
+                        <div class="lawyer-overlay absolute inset-0 flex flex-col items-center justify-center text-white pointer-events-none px-4">
+                            <div id="agora-lawyer-stage" class="w-28 h-36 rounded-2xl overflow-hidden border-2 border-emerald-500 shadow-lg bg-zinc-900 mb-2 relative">
+                                <video id="agora-lawyer-video" class="camera-feed hidden w-full h-full"></video>
+                                <img id="lawyer-placeholder" src="https://i.pravatar.cc/200?img=28" alt="" class="w-full h-full object-cover">
+                            </div>
                             <div class="font-semibold text-base">Dr. Priya Sharma</div>
                             <div class="text-xs text-emerald-300 mt-1 flex items-center gap-2">
                                 <span class="w-2 h-2 bg-red-500 rounded-full rec-dot"></span>
                                 LIVE • <span id="call-timer">00:00</span>
                             </div>
-                            <div class="text-[10px] text-zinc-300 mt-2 px-6 text-center bg-black/40 rounded-lg py-1">Back cam captures the scene • front cam captures you • mic records audio</div>
+                            <div class="text-[10px] text-zinc-300 mt-2 text-center bg-black/50 rounded-lg py-1 px-2" id="agora-status">Connecting Agora video…</div>
                         </div>
                         <div class="video-scanline absolute inset-0 z-20 pointer-events-none"></div>
                         <div id="back-rec-label" class="absolute bottom-3 left-3 z-30 text-[8px] bg-red-600/90 text-white px-1.5 py-0.5 rounded font-semibold hidden"><i class="fa-solid fa-circle text-[5px] mr-0.5 rec-dot"></i>REAR REC</div>
@@ -683,9 +694,14 @@
                         </div>
                         <div class="absolute top-3 left-3 z-30 flex flex-wrap gap-2">
                             <span class="text-[9px] bg-black/50 text-white px-2 py-1 rounded-full"><i class="fa-solid fa-lock mr-1"></i>Agora E2E</span>
-                            <span class="text-[9px] bg-emerald-600/80 text-white px-2 py-1 rounded-full" id="pip-badge">Dual cam</span>
+                            <span class="text-[9px] bg-emerald-600/80 text-white px-2 py-1 rounded-full" id="pip-badge">Agora + dual cam</span>
                             <span class="text-[9px] bg-red-600/90 text-white px-2 py-1 rounded-full hidden" id="evidence-rec-badge"><i class="fa-solid fa-circle text-[6px] mr-1 rec-dot"></i>Evidence Shield REC</span>
                         </div>
+                    </div>
+
+                    <div id="call-agora-channel" class="hidden text-[10px] bg-zinc-100 border border-zinc-200 rounded-xl px-3 py-2 mb-2 text-zinc-600">
+                        <span class="font-semibold text-zinc-800">Channel:</span> <code id="call-channel-code" class="text-blue-800"></code>
+                        <a id="call-lawyer-link" href="lawyer.html" target="_blank" class="text-blue-600 underline ml-2">Lawyer portal</a>
                     </div>
 
                     <div id="recording-status-bar" class="grid grid-cols-3 gap-2 mb-3 text-[10px]">
@@ -2009,6 +2025,12 @@
         let frontCamRecording = false;
         let backCamRecording = false;
         let micRecording = false;
+        let agoraClient = null;
+        let agoraLocalVideo = null;
+        let agoraLocalAudio = null;
+        let agoraChannelName = '';
+        let agoraConnected = false;
+        let agoraClientUid = 0;
         const DEMO_PIN = '1234';
         const LAWYER_HOURLY_RATE = 360;
 
@@ -2673,7 +2695,126 @@
                 progress.style.width = '100%';
                 status.textContent = 'Lawyer available';
                 lawyerFound.classList.remove('hidden');
+                generateAgoraChannel();
+                updateAgoraChannelUI();
             }, 2200);
+        }
+
+        function generateAgoraChannel() {
+            agoraChannelName = 'shieldau-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+            return agoraChannelName;
+        }
+
+        function updateAgoraChannelUI() {
+            const ch = agoraChannelName;
+            const matchCode = document.getElementById('match-agora-channel');
+            const matchBox = document.getElementById('agora-channel-box');
+            const matchLink = document.getElementById('lawyer-join-link');
+            const callBox = document.getElementById('call-agora-channel');
+            const callCode = document.getElementById('call-channel-code');
+            const callLink = document.getElementById('call-lawyer-link');
+            if (matchCode) matchCode.textContent = ch;
+            if (matchBox) matchBox.classList.toggle('hidden', !ch);
+            if (matchLink) matchLink.href = 'lawyer.html?channel=' + encodeURIComponent(ch);
+            if (callCode) callCode.textContent = ch;
+            if (callBox) callBox.classList.toggle('hidden', !ch);
+            if (callLink) callLink.href = 'lawyer.html?channel=' + encodeURIComponent(ch);
+        }
+
+        async function fetchAgoraSession(channel, uid, role = 'publisher') {
+            const base = window.SHIELDAU_AGORA?.apiBase || '';
+            const configRes = await fetch(`${base}/api/agora/config`);
+            if (!configRes.ok) {
+                const err = await configRes.json().catch(() => ({}));
+                throw new Error(err.error || 'Agora API not reachable — deploy shieldau-api on Render');
+            }
+            const { appId } = await configRes.json();
+            const tokenRes = await fetch(
+                `${base}/api/agora/token?channel=${encodeURIComponent(channel)}&uid=${uid}&role=${role}`
+            );
+            if (!tokenRes.ok) {
+                const err = await tokenRes.json().catch(() => ({}));
+                throw new Error(err.hint || err.error || 'Agora token failed');
+            }
+            const { token } = await tokenRes.json();
+            return { appId, token };
+        }
+
+        function setupAgoraRemoteHandlers() {
+            if (!agoraClient) return;
+            agoraClient.on('user-published', async (user, mediaType) => {
+                if (user.uid === agoraClientUid) return;
+                await agoraClient.subscribe(user, mediaType);
+                if (mediaType === 'video') {
+                    document.getElementById('lawyer-placeholder')?.classList.add('hidden');
+                    const vid = document.getElementById('agora-lawyer-video');
+                    vid?.classList.remove('hidden');
+                    user.videoTrack.play('agora-lawyer-video');
+                    const st = document.getElementById('agora-status');
+                    if (st) st.textContent = 'Lawyer live on Agora E2E';
+                }
+                if (mediaType === 'audio') user.audioTrack.play();
+            });
+            agoraClient.on('user-left', (user) => {
+                if (user.uid === agoraClientUid) return;
+                document.getElementById('lawyer-placeholder')?.classList.remove('hidden');
+                document.getElementById('agora-lawyer-video')?.classList.add('hidden');
+                const st = document.getElementById('agora-status');
+                if (st) st.textContent = 'Lawyer left — Evidence Shield still recording';
+            });
+        }
+
+        async function joinAgoraCall(channel) {
+            if (typeof AgoraRTC === 'undefined') throw new Error('Agora SDK not loaded');
+            agoraClientUid = Math.floor(10000 + Math.random() * 89999);
+            const { appId, token } = await fetchAgoraSession(channel, agoraClientUid);
+            agoraClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+            await agoraClient.join(appId, channel, token, agoraClientUid);
+            setupAgoraRemoteHandlers();
+
+            const videoTrack = frontStream?.getVideoTracks?.()[0];
+            const audioTrack = frontStream?.getAudioTracks?.()[0];
+            if (videoTrack) {
+                agoraLocalVideo = AgoraRTC.createCustomVideoTrack({ mediaStreamTrack: videoTrack });
+            } else {
+                agoraLocalVideo = await AgoraRTC.createCameraVideoTrack({ facingMode: 'user' });
+            }
+            if (audioTrack) {
+                agoraLocalAudio = AgoraRTC.createCustomAudioTrack({ mediaStreamTrack: audioTrack });
+            } else {
+                agoraLocalAudio = await AgoraRTC.createMicrophoneAudioTrack();
+            }
+
+            if (lawyerMuted) await agoraLocalAudio.setEnabled(false);
+            await agoraClient.publish([agoraLocalAudio, agoraLocalVideo]);
+            agoraConnected = true;
+            const st = document.getElementById('agora-status');
+            if (st) st.textContent = 'Agora connected — waiting for lawyer to join channel';
+        }
+
+        async function leaveAgoraCall() {
+            agoraConnected = false;
+            if (!agoraClient) return;
+            try {
+                if (agoraLocalVideo || agoraLocalAudio) {
+                    const tracks = [agoraLocalVideo, agoraLocalAudio].filter(Boolean);
+                    await agoraClient.unpublish(tracks);
+                }
+                await agoraClient.leave();
+            } catch (e) {
+                console.warn('Agora leave:', e);
+            }
+            if (agoraLocalVideo && !frontStream) {
+                agoraLocalVideo.stop();
+                agoraLocalVideo.close();
+            }
+            if (agoraLocalAudio && !frontStream) {
+                agoraLocalAudio.stop();
+                agoraLocalAudio.close();
+            }
+            agoraClient = null;
+            agoraLocalVideo = null;
+            agoraLocalAudio = null;
         }
 
         function setRecPill(pillId, statusId, active, label) {
@@ -2813,12 +2954,16 @@
             return summary;
         }
 
-        function simulateCall() {
+        async function simulateCall() {
             showSection('call-section');
             arrestProtectionActive = false;
             lawyerMuted = false;
             lawyerPreviewOn = true;
+            if (!agoraChannelName) generateAgoraChannel();
+            updateAgoraChannelUI();
             document.getElementById('arrest-protection-banner')?.classList.add('hidden');
+            document.getElementById('lawyer-placeholder')?.classList.remove('hidden');
+            document.getElementById('agora-lawyer-video')?.classList.add('hidden');
             const arrestBtn = document.getElementById('arrest-btn');
             if (arrestBtn) {
                 arrestBtn.classList.remove('bg-amber-600', 'text-white');
@@ -2833,7 +2978,15 @@
                 updateCallTimer();
             }, 1000);
 
-            startEvidenceCapture();
+            await startEvidenceCapture();
+
+            try {
+                await joinAgoraCall(agoraChannelName);
+            } catch (err) {
+                console.warn('Agora join failed:', err);
+                const st = document.getElementById('agora-status');
+                if (st) st.textContent = 'Agora offline — Evidence Shield recording only. ' + (err.message || '');
+            }
 
             const alertOn = document.getElementById('emergency-alert-checkbox')?.checked
                 && document.getElementById('emergency-master-toggle')?.checked;
@@ -2857,13 +3010,16 @@
             logActivity('Arrest Protection activated — dual camera + mic recording continues');
         }
 
-        function toggleLawyerMute() {
+        async function toggleLawyerMute() {
             lawyerMuted = !lawyerMuted;
             const btn = document.getElementById('mute-btn');
             btn.innerHTML = lawyerMuted
                 ? '<i class="fa-solid fa-microphone-slash text-sm text-amber-600"></i> Lawyer'
                 : '<i class="fa-solid fa-microphone text-sm"></i> Lawyer';
             btn.classList.toggle('bg-amber-50', lawyerMuted);
+            if (agoraLocalAudio) {
+                try { await agoraLocalAudio.setEnabled(!lawyerMuted); } catch {}
+            }
             setRecPill('mic-rec-pill', 'mic-rec-status', micRecording, micRecording ? 'REC' : 'Off');
         }
 
@@ -3199,7 +3355,7 @@
             }
         }
 
-        function endCall() {
+        async function endCall() {
             clearInterval(callInterval);
             const minutes = callSeconds / 60;
             const mins = Math.floor(callSeconds / 60);
@@ -3207,8 +3363,10 @@
             const durationLabel = mins > 0 ? `${mins} min ${secs} sec` : `${secs} sec`;
             const { total, breakdown } = calculateCallCost(minutes);
 
+            await leaveAgoraCall();
             const savedSummary = saveEvidenceToVault(durationLabel);
             stopEvidenceCapture();
+            agoraChannelName = '';
             frontCamRecording = false;
             backCamRecording = false;
             micRecording = false;

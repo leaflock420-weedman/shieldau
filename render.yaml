@@ -1,5 +1,4 @@
-# ShieldAU — deploy on Render (primary host for now; APK built from this URL later)
-# Dashboard: New → Blueprint → connect github.com/leaflock420-weedman/shieldau
+# ShieldAU — static PWA + Agora token API
 services:
   - type: web
     name: shieldau
@@ -19,3 +18,18 @@ services:
       - path: /manifest.json
         name: Cache-Control
         value: no-cache
+
+  - type: web
+    name: shieldau-api
+    runtime: node
+    repo: https://github.com/leaflock420-weedman/shieldau
+    branch: main
+    rootDir: api
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: AGORA_APP_ID
+        sync: false
+      - key: AGORA_APP_CERTIFICATE
+        sync: false
